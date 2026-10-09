@@ -16,6 +16,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -128,7 +129,8 @@ public final class VeinMining {
     Block block = state.getBlock();
     BlockEntity blockEntity = level.getBlockEntity(pos);
     List<ItemStack> drops = creative ? List.of() : Block.getDrops(state, level, pos, blockEntity, player, stack);
-    int exp = creative ? 0 : state.getExpDrop(level, pos, blockEntity, player, stack);
+    int exp = creative ? 0 : EnchantmentHelper.processBlockExperience(level, stack,
+        state.getExpDrop(level, pos, blockEntity, player, stack));
     block.playerWillDestroy(level, pos, state, player);
     if (!level.removeBlock(pos, false)) {
       return false;

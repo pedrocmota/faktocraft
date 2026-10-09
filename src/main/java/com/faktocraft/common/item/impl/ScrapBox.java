@@ -1,13 +1,17 @@
 package com.faktocraft.common.item.impl;
 
+import com.faktocraft.Faktocraft;
 import com.faktocraft.common.item.base.BaseItem;
 import com.faktocraft.common.recipe.impl.ScrapBoxRecipe;
 import com.faktocraft.common.registries.ModRecipeType;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,21 +20,18 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.storage.loot.providers.number.floats.ResolvableFloat;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
-import java.util.List;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
 
 public class ScrapBox extends BaseItem {
-  private static final int BURN_TIME_TICKS = 1800;
+  public static final ResourceKey<ContextIntProvider> BURN_TIME = ResourceKey.create(Registries.CONTEXT_INT_PROVIDER,
+      Identifier.fromNamespaceAndPath(Faktocraft.MODID, "cooking/time_scrap_box"));
 
   public ScrapBox(Properties properties) {
-    super(properties.component(DataComponents.COOKING_FUEL,
-        new CookingFuel(new ResolvableInt.Constant(BURN_TIME_TICKS), new ResolvableFloat.Constant(1.0F))));
+    super(properties.cookingFuel(BURN_TIME));
   }
 
   public static ItemStack openScrap(Level level) {

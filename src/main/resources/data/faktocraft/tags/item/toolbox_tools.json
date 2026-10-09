@@ -1,10 +1,12 @@
 {
   "replace": false,
   "values": [
-    {
-      "id": "#minecraft:tools",
-      "required": false
-    },
+    "#minecraft:swords",
+    "#minecraft:axes",
+    "#minecraft:pickaxes",
+    "#minecraft:shovels",
+    "#minecraft:hoes",
+    "minecraft:trident",
     "faktocraft:electric_treetap",
     "faktocraft:electric_wrench",
     "faktocraft:electric_hoe",

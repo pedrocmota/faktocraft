@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.rubber_wood;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.block.FaktocraftBlock;
 import com.faktocraft.common.energy.interfaces.IEnergy;
 import com.faktocraft.common.interfaces.block.IStateAxis;
@@ -117,7 +118,7 @@ public class RubberLog extends FaktocraftBlock implements IStateRubberLog, IStat
     if (sound != null) {
       level.playSound(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, sound, SoundSource.BLOCKS, 0.5F,
           pitch);
-      return InteractionResult.SUCCESS;
+      return InteractionResults.serverSwing(level);
     }
 
     return InteractionResult.PASS;

@@ -710,6 +710,9 @@ public abstract class ScreenPipeRecipes<M extends MenuPipeRecipes> extends Abstr
     if (search != null && search.isFocused()) {
       if (keyCode == InputConstants.KEY_ESCAPE) {
         search.setFocused(false);
+        if (getFocused() == search) {
+          setFocused(null);
+        }
         return true;
       }
       if (search.keyPressed(event)) {

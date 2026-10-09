@@ -4,6 +4,8 @@ import com.faktocraft.client.render.FluidFogVolume;
 import com.faktocraft.client.render.StatusClientBridges;
 import com.faktocraft.common.util.ClientProxy;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -16,6 +18,16 @@ import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 public final class FaktocraftClientProxy implements ClientProxy {
+  @Override
+  public HolderLookup.Provider clientThreadRegistries() {
+    Minecraft minecraft = Minecraft.getInstance();
+    if (minecraft == null || !minecraft.isSameThread()) {
+      return null;
+    }
+    ClientPacketListener connection = minecraft.getConnection();
+    return connection == null ? null : connection.registryAccess();
+  }
+
   @Override
   public void startTileSound(SoundEvent sound, float volume, BlockPos pos) {
     SoundHandler.startTileSound(sound, volume, pos);

@@ -1,6 +1,6 @@
 {
   "type": "minecraft:blasting",
-  "cookingtime": 100,
+  "cookingtime": 200,
   "experience": 0.8,
   "ingredient": "faktocraft:deepslate_tin_ore",
   "result": "faktocraft:tin_ingot"

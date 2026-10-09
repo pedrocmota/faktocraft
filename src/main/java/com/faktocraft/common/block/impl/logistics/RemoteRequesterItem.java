@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.logistics;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.util.NbtBridge;
 import com.faktocraft.common.util.PlayerMessages;
 import java.util.function.Consumer;
@@ -63,14 +64,14 @@ public class RemoteRequesterItem extends Item {
             Component.translatable("logistics." + Faktocraft.MODID + ".remote.bound"), true);
       }
     }
-    return InteractionResult.SUCCESS;
+    return InteractionResults.sided(level);
   }
 
   @Override
   public InteractionResult use(Level level, Player player, InteractionHand hand) {
     ItemStack stack = player.getItemInHand(hand);
     if (level.isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
     BlockPos pos = boundPos(stack);
     ResourceKey<Level> dim = boundDim(stack);

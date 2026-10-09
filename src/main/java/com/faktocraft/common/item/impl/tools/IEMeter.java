@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl.tools;
 
+import com.faktocraft.common.util.InteractionResults;
 import net.minecraft.world.item.Item;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -73,7 +74,7 @@ public class IEMeter extends BaseItem {
             network.energyStored(), network.maxEnergy(),
             false, 0, 0, false, 0, 0,
             network.getLastReceived(), network.getLastDelivered(), network.getLastDemand(), 0));
-        return InteractionResult.SUCCESS;
+        return InteractionResults.serverSwing(level);
       }
     }
 
@@ -88,7 +89,7 @@ public class IEMeter extends BaseItem {
           storage.energyType() == EnergyType.RECEIVE, storage.getLastConsumed(), storage.getTotalConsumed(),
           0, 0, storage.getDemandShortfall(),
           storage.energyType() == EnergyType.RECEIVE ? storage.maxReceiveTick() : 0));
-      return InteractionResult.SUCCESS;
+      return InteractionResults.serverSwing(level);
     }
 
     return super.useOn(context);

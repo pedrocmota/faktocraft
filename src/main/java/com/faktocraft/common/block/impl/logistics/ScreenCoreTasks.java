@@ -137,6 +137,9 @@ public class ScreenCoreTasks extends AbstractContainerScreen<MenuCoreTasks> {
     if (search != null && search.isFocused() && search.isVisible()) {
       if (keyCode == InputConstants.KEY_ESCAPE) {
         search.setFocused(false);
+        if (getFocused() == search) {
+          setFocused(null);
+        }
         return true;
       }
       if (search.keyPressed(event)) {

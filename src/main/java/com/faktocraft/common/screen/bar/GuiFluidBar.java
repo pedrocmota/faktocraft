@@ -175,7 +175,8 @@ public class GuiFluidBar extends GuiElement {
 
   private void renderPlungerDrain(GuiGraphicsExtractor graphics, Minecraft minecraft, int mouseX, int mouseY) {
 
-    boolean pressed = minecraft.mouseHandler.isLeftPressed();
+    boolean pressed = (org.lwjgl.sdl.SDLMouse.SDL_GetMouseState(null, null)
+        & org.lwjgl.sdl.SDLMouse.SDL_BUTTON_LMASK) != 0;
     boolean pressEdge = pressed && !prevPressed;
     prevPressed = pressed;
 

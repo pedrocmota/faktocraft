@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.pipe;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.util.FluidInteractionHelper;
 import com.faktocraft.common.util.FluidStackCompat;
 import com.faktocraft.common.util.PlayerMessages;
@@ -113,7 +114,7 @@ public class BlockTank extends FaktocraftBlock implements EntityBlock {
           if (!level.isClientSide()) {
             transferWithItem(level, pos, player, hand, stack, itemHandler, tankEntity.columnStorage);
           }
-          return InteractionResult.SUCCESS;
+          return InteractionResults.sided(level);
         }
       }
       if (FluidInteractionHelper.interactWithFluidHandler(player, hand, tankEntity.columnStorage)) {

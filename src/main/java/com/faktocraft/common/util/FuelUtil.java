@@ -1,8 +1,11 @@
 package com.faktocraft.common.util;
 
+import com.faktocraft.common.entity.block.FaktocraftBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.level.Level;
@@ -40,7 +43,8 @@ public final class FuelUtil {
         .withOptionalParameter(net.neoforged.neoforge.common.loot.NeoForgeLootContextParams.QUERIED_STACK, stack);
     if (blockEntity != null) {
       params.withParameter(LootContextParams.BLOCK_STATE, blockEntity.getBlockState())
-          .withParameter(LootContextParams.BLOCK_ENTITY, blockEntity);
+          .withParameter(LootContextParams.BLOCK_ENTITY, blockEntity)
+          .withParameter(LootContextParams.CONTAINER, containerOf(blockEntity));
     }
     LootContext context;
     try {
@@ -49,6 +53,16 @@ public final class FuelUtil {
       return 0;
     }
     return ResolvableInt.getFromItem(stack, DataComponents.COOKING_FUEL, CookingFuel::burnTime, context, 0);
+  }
+
+  private static Container containerOf(BlockEntity blockEntity) {
+    if (blockEntity instanceof Container container) {
+      return container;
+    }
+    if (blockEntity instanceof FaktocraftBlockEntity machine && machine.getItemStackHandler() != null) {
+      return machine.getItemStackHandler();
+    }
+    return new SimpleContainer(0);
   }
 
   public static boolean isFuel(@Nullable Level level, ItemStack stack, @Nullable BlockEntity blockEntity) {

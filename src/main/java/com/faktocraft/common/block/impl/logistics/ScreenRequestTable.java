@@ -218,6 +218,9 @@ public class ScreenRequestTable extends AbstractContainerScreen<MenuRequestTable
     quantityBox.setVisible(main);
     if (!main) {
       quantityBox.setFocused(false);
+      if (getFocused() == quantityBox) {
+        setFocused(null);
+      }
     }
     requestButton.visible = main;
     taskPanel.setVisible(!main);
@@ -812,6 +815,10 @@ public class ScreenRequestTable extends AbstractContainerScreen<MenuRequestTable
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
       moveCursorToEnd(false);
       setHighlightPos(getCursorPosition());
+    }
+
+    @Override
+    protected void onDrag(MouseButtonEvent event, double dx, double dy) {
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl.tools;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.item.base.DiggerElectricItem;
 import com.faktocraft.common.registries.ModTags;
 import com.faktocraft.common.util.NbtBridge;
@@ -46,7 +47,7 @@ public class ToolboxItem extends Item {
       level.playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.IRON_TRAPDOOR_OPEN,
           net.minecraft.sounds.SoundSource.PLAYERS, 0.4F, 1.6F);
     }
-    return InteractionResult.SUCCESS;
+    return InteractionResults.sided(level);
   }
 
   @Override

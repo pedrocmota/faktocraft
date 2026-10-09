@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.monitor;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.util.PlayerMessages;
 import net.minecraft.world.item.Item;
 import java.util.function.Consumer;
@@ -183,7 +184,7 @@ public class BlockStatusMonitor extends FaktocraftBlock implements EntityBlock, 
         && level.getBlockEntity(masterPos(state, pos)) instanceof BlockEntityStatusMonitor monitor) {
       PlayerMessages.display(player, monitor.describeTarget(), true);
     }
-    return InteractionResult.SUCCESS;
+    return InteractionResults.sided(level);
   }
 
   @Override

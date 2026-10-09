@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "faktocraft:portregressiongametest.nanosaberonanarmorstanddoesnotdrain",
+  "environment": "minecraft:default",
+  "structure": "faktocraft:gametest_platform",
+  "max_ticks": 80,
+  "sky_access": true
+}

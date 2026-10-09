@@ -58,12 +58,13 @@ public class RecyclingCategory extends AbstractRecipeCategory<RecyclingRecipe> {
             .toList();
 
     builder.addSlot(RecipeIngredientRole.INPUT, 9, 19).addItemStacks(inputs);
-    builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 19).add(recipe.getResultItem())
-        .addRichTooltipCallback((view, tooltip) -> tooltip.add(
-            Component.translatable(EnumLang.CHANCE.getTranslationKey(),
-                Component.literal((Math.round(recipe.getChance() * 100.0) / 100.0) + "%")
-                    .withStyle(ChatFormatting.YELLOW))
-                .withStyle(ChatFormatting.DARK_GRAY)));
+    markChance(builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 19).add(recipe.getResultItem()),
+        recipe.getChance() < 1.0F)
+            .addRichTooltipCallback((view, tooltip) -> tooltip.add(
+                Component.translatable(EnumLang.CHANCE.getTranslationKey(),
+                    Component.literal((Math.round(recipe.getChance() * 100.0) / 100.0) + "%")
+                        .withStyle(ChatFormatting.YELLOW))
+                    .withStyle(ChatFormatting.DARK_GRAY)));
   }
 
   @Override

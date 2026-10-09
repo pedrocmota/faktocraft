@@ -4,6 +4,8 @@
   "package": "com.faktocraft.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "EntityLegacyDataMixin",
+    "LivingEntityFireMixin",
     "LivingEntityInvoker"
   ],
   "client": [

@@ -68,8 +68,8 @@ public class DistillingCategory extends AbstractRecipeCategory<DistillingCategor
         .setFluidRenderer(recipe.fuel().getAmount(), false, 8, 29)
         .add(recipe.fuel().getFluid(), recipe.fuel().getAmount());
 
-    builder.addSlot(RecipeIngredientRole.OUTPUT, 74, 36)
-        .add(recipe.byproduct());
+    markChance(builder.addSlot(RecipeIngredientRole.OUTPUT, 74, 36).add(recipe.byproduct()),
+        recipe.byproductChance() < 1.0F);
   }
 
   @Override

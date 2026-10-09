@@ -1,5 +1,6 @@
 package com.faktocraft.common.cover;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.block.FaktocraftBlock;
 import com.faktocraft.common.block.VoxelBlock;
 import net.minecraft.core.BlockPos;
@@ -69,7 +70,7 @@ public class BlockDrilled extends FaktocraftBlock implements EntityBlock {
   public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
       BlockHitResult hitResult) {
     if (CoverSupport.tryPlaceHeldInto(level, pos, player, hand)) {
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
     return super.use(state, level, pos, player, hand, hitResult);
   }

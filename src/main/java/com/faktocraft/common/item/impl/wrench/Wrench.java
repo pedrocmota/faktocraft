@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl.wrench;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.item.base.ToolItem;
 import com.faktocraft.common.util.wrench.WrenchHelper;
 import net.minecraft.core.BlockPos;
@@ -19,7 +20,7 @@ public class Wrench extends ToolItem {
     BlockPos pos = context.getClickedPos();
     return WrenchHelper.onWrenchUse(level.getBlockState(pos), level, pos, context.getPlayer(), context.getHand(),
         context.getClickedFace())
-            ? InteractionResult.SUCCESS
+            ? InteractionResults.serverSwing(level)
             : InteractionResult.PASS;
   }
 

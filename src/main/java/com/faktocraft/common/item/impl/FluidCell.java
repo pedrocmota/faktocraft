@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.config.ModConfig;
 import com.faktocraft.common.item.base.FluidItem;
 import net.minecraft.core.BlockPos;
@@ -95,7 +96,7 @@ public class FluidCell extends FluidItem {
       setFluid(filled, fluid, SOURCE_BLOCK_MB);
 
       ItemStack result = ItemUtils.createFilledResult(stack, player, filled);
-      return InteractionResult.SUCCESS.heldItemTransformedTo(result);
+      return InteractionResults.sided(level).heldItemTransformedTo(result);
     }
 
     return InteractionResult.FAIL;
@@ -127,7 +128,7 @@ public class FluidCell extends FluidItem {
       ItemStack result = player.getAbilities().instabuild ? stack
           : ItemUtils.createFilledResult(stack, player, emptied);
 
-      return InteractionResult.SUCCESS.heldItemTransformedTo(result);
+      return InteractionResults.sided(level).heldItemTransformedTo(result);
     }
 
     return InteractionResult.FAIL;

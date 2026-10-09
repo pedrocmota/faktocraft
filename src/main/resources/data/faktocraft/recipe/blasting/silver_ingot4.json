@@ -1,6 +1,6 @@
 {
   "type": "minecraft:blasting",
-  "cookingtime": 100,
+  "cookingtime": 200,
   "experience": 0.7,
   "ingredient": "faktocraft:silver_dust",
   "result": "faktocraft:silver_ingot"

@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl.tools;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.enums.EnergyTier;
 import com.faktocraft.common.enums.EnergyType;
 import com.faktocraft.common.util.wrench.WrenchHelper;
@@ -27,7 +28,7 @@ public class MultiTool extends ElectricHoe {
     if (!state.isAir() && WrenchHelper.hasAction(state.getBlock())) {
       return WrenchHelper.onWrenchUse(state, level, pos, context.getPlayer(), context.getHand(),
           context.getClickedFace())
-              ? InteractionResult.SUCCESS
+              ? InteractionResults.serverSwing(level)
               : InteractionResult.PASS;
     }
     return super.useOn(context);

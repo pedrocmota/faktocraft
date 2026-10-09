@@ -220,6 +220,15 @@ public class MachineDisplay extends BasicDisplay {
     return chance > 0.0F ? ReiDisplays.withChance(outputs.get(index), chance) : outputs.get(index);
   }
 
+  public boolean chanceOutput(int index) {
+    float chance = index < outputChances.size() ? outputChances.get(index) : 0.0F;
+    if (chance > 0.0F) {
+      return chance < (category.equals(ReiCategories.RECYCLING) ? 1.0F : 100.0F);
+    }
+    return category.equals(ReiCategories.SCRAP_BOX)
+        || (category.equals(ReiCategories.DISTILLING) && index > 0 && info.chance() < 1.0F);
+  }
+
   public int inputCount() {
     return inputs.size();
   }

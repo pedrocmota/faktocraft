@@ -91,6 +91,10 @@ public final class NbtBridge {
     if (current != null) {
       return current;
     }
+    HolderLookup.Provider client = ClientProxy.get().clientThreadRegistries();
+    if (client != null) {
+      return client;
+    }
     HolderLookup.Provider fb = fallback;
     return fb != null ? fb : RegistryAccess.EMPTY;
   }
@@ -99,6 +103,9 @@ public final class NbtBridge {
     HolderLookup.Provider current = CURRENT.get();
     if (current instanceof RegistryAccess access) {
       return access;
+    }
+    if (ClientProxy.get().clientThreadRegistries() instanceof RegistryAccess client) {
+      return client;
     }
     HolderLookup.Provider fb = fallback;
     return fb instanceof RegistryAccess access ? access : RegistryAccess.EMPTY;

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "faktocraft:vanillatagchangesgametest.quarryminesthewholedirtfamily",
+  "environment": "minecraft:default",
+  "structure": "faktocraft:gametest_platform",
+  "max_ticks": 100,
+  "sky_access": true
+}

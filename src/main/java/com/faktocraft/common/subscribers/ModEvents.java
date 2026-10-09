@@ -95,23 +95,31 @@ public class ModEvents {
 
   @SubscribeEvent
   public static void onLivingAttack(LivingIncomingDamageEvent event) {
-    if (event.getEntity().level().isClientSide()
-        || !event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
+    if (event.getEntity().level().isClientSide()) {
       return;
     }
-    var living = event.getEntity();
-    if (com.faktocraft.common.item.impl.armor.HazmatArmorItem.isFullSuit(living)) {
+    if (fireProtection(event.getEntity(), event.getSource())) {
       event.setCanceled(true);
+    }
+  }
+
+  public static boolean fireProtection(net.minecraft.world.entity.LivingEntity living,
+      net.minecraft.world.damagesource.DamageSource source) {
+    if (!source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
+      return false;
+    }
+    if (com.faktocraft.common.item.impl.armor.HazmatArmorItem.isFullSuit(living)) {
       if (living.getRandom().nextBoolean()) {
         com.faktocraft.common.item.impl.armor.HazmatArmorItem.wearFullSuit(living, 1);
       }
-      return;
+      return true;
     }
     if (com.faktocraft.common.item.impl.nano.ItemNanoArmor.tryUseFullSuit(living,
         com.faktocraft.common.item.impl.nano.ItemNanoArmor.FIRE_COST)) {
-      event.setCanceled(true);
       living.clearFire();
+      return true;
     }
+    return false;
   }
 
   @SubscribeEvent

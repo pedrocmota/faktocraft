@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -65,7 +66,10 @@ public final class CapabilityBridge {
   @Nullable
   public static IItemHandler itemHandler(Level level, BlockPos pos, @Nullable Direction side) {
     BlockEntity be = level.getBlockEntity(pos);
-    IItemHandler local = be != null ? local(be, ForgeCapabilities.ITEM_HANDLER, side) : null;
+    if (be == null || be instanceof JukeboxBlockEntity) {
+      return null;
+    }
+    IItemHandler local = local(be, ForgeCapabilities.ITEM_HANDLER, side);
     if (local != null) {
       return local;
     }
@@ -80,7 +84,10 @@ public final class CapabilityBridge {
   @Nullable
   public static IFluidHandler fluidHandler(Level level, BlockPos pos, @Nullable Direction side) {
     BlockEntity be = level.getBlockEntity(pos);
-    IFluidHandler local = be != null ? local(be, ForgeCapabilities.FLUID_HANDLER, side) : null;
+    if (be == null) {
+      return null;
+    }
+    IFluidHandler local = local(be, ForgeCapabilities.FLUID_HANDLER, side);
     if (local != null) {
       return local;
     }

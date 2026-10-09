@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.pipe;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.registries.PipeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -79,7 +80,7 @@ public final class PipeValveHelper {
         level.playSound(null, pos, net.minecraft.sounds.SoundEvents.METAL_PLACE,
             net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 1.2F);
       }
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
 
     if (valve.isPresent() && !player.isCrouching()) {
@@ -93,7 +94,7 @@ public final class PipeValveHelper {
         level.playSound(null, pos, com.faktocraft.common.registries.ModSounds.VALVE_WHEEL,
             net.minecraft.sounds.SoundSource.BLOCKS, 0.45F, open ? 1.0F : 0.94F);
       }
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
     if (valve.isPresent() && player.isCrouching() && held.isEmpty()) {
       if (!level.isClientSide()) {
@@ -103,7 +104,7 @@ public final class PipeValveHelper {
         level.playSound(null, pos, net.minecraft.sounds.SoundEvents.METAL_BREAK,
             net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.2F);
       }
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
     return null;
   }

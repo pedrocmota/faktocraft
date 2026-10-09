@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.monitor;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.util.NbtBridge;
 import com.faktocraft.common.util.PlayerMessages;
 import net.minecraft.world.item.Item;
@@ -139,7 +140,7 @@ public class MonitorCardItem extends BaseItem {
         clear(stack);
         message(player, Component.translatable("chat.faktocraft.monitor_card.cleared"));
       }
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
     return super.use(level, player, hand);
   }

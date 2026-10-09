@@ -1,0 +1,85 @@
+{
+  "aliases": {
+    "minecraft:grass": "minecraft:short_grass",
+    "minecraft:scute": "minecraft:turtle_scute",
+    "minecraft:sweeping": "minecraft:sweeping_edge",
+    "minecraft:chain": "minecraft:iron_chain"
+  },
+  "valueAliases": {
+    "NORMAL": "PUSH_PULL",
+    "DESTROY": "POPPED",
+    "BLOCK": "IMMOVEABLE",
+    "PUSH_ONLY": "PUSH",
+    "IGNORE": "IGNORE_ENTITY"
+  },
+  "accepted": [
+    {
+      "match": "faktocraft:(deepslate_)?sulfur_ore",
+      "reason": "sulfur ore removed in 26.3; sulfur dust comes from vanilla minecraft:sulfur"
+    },
+    {
+      "match": "^menus/faktocraft:(electric_furnace|iron_furnace)/shift/[a-z_]+:[a-z_]*leaves: only in 26\\.3",
+      "reason": "vanilla 26.x added smelting recipes for leaves"
+    },
+    {
+      "match": "^menus/faktocraft:(electric_furnace|iron_furnace)/slots/0/accepts: gained \\[([a-z_]+:[a-z_]*leaves(, )?)+\\]$",
+      "reason": "vanilla 26.x added smelting recipes for leaves"
+    },
+    {
+      "match": "/shift/minecraft:decorated_pot: ",
+      "reason": "vanilla 26.x made decorated pots stack to 64"
+    },
+    {
+      "match": "^menus/faktocraft:request_table/slots/\\d+/max: 1\\.20\\.1=64 26\\.3=99$",
+      "reason": "vanilla 1.20.5+ raised the default container stack limit to 99; items still stop at their own max stack size"
+    },
+    {
+      "match": "minecraft:milk_bucket",
+      "reason": "milk is not a fluid in either version; 1.20.1 only accepted an empty-handed milk bucket in fluid slots"
+    },
+    {
+      "match": "^crafting/faktocraft:machines/compressor/cells/\\d+: lost \\[minecraft:infested_deepslate, minecraft:infested_stone, minecraft:polished_andesite, minecraft:polished_deepslate, minecraft:polished_diorite, minecraft:polished_granite\\]$",
+      "reason": "c:stones (NeoForge convention) leaves out polished and infested stone that forge:stone had"
+    },
+    {
+      "match": "^crafting/faktocraft:pipes/ender_tank/cells/\\d+: gained \\[minecraft:crying_obsidian\\]$",
+      "reason": "c:obsidians (NeoForge convention) includes crying obsidian"
+    },
+    {
+      "match": "^tags/blocks/minecraft:sword_efficient: lost \\[faktocraft:rubber_sapling\\]$",
+      "reason": "vanilla 26.x removed saplings from minecraft:sword_efficient"
+    },
+    {
+      "match": "^tags/items/faktocraft:acid_soluble: gained \\[minecraft:chorus_flower, minecraft:spore_blossom\\]$",
+      "reason": "vanilla 26.x added chorus flower and spore blossom to minecraft:flowers"
+    },
+    {
+      "match": "^machine_recipes/faktocraft:recycling/scrap/fields/ingredient: only in 1\\.20\\.1: \\{\"set\":\\[\\]\\}$",
+      "reason": "the scrap recycling recipe has no ingredient in either version (empty Ingredient in 1.20.1, absent in 26.3)"
+    },
+    {
+      "match": "^items/faktocraft:(advanced_jetpack|jetpack|bronze_(axe|hoe|pickaxe|shovel|sword)|hazmat_(boots|chestplate|helmet|leggings)|chainsaw|diamond_chainsaw|iridium_chainsaw|nano_saber|cutter|fuel_rod|hammer|plunger|treetap|wrench)/(anvilEnchants|tableEnchants|enchantValue): ",
+      "reason": "enchantability of these items differs from 1.20.1; left as is by decision of 08/10/2026"
+    },
+    {
+      "match": "^sides/faktocraft:(distillery|extruder|fermenter|fluid_enricher|ore_washing_plant|polymerizer)/fluids/[a-z]+/accepts: lost ",
+      "reason": "aborted transfers through the public fluid capability corrupt these multi-tank machines (audit bug 4); only other mods reach that path; left as is by decision of 08/10/2026"
+    },
+    {
+      "match": "^states/faktocraft:distillery/place/[a-z_]+: 1\\.20\\.1=null ",
+      "reason": "test environment: the placement spot is one block below the probe position and the 1.20.1 structure block sits next to it, so the distillery refuses to place there; the placement code is identical"
+    },
+    {
+      "match": "^tooltips/[^:]+:[a-z_]+(#charged)?/\\d+: 1\\.20\\.1=\\{blue\\}<attribute\\.modifier\\.plus\\.0\\(1\\|<attribute\\.name\\.knockback_resistance>\\)> 26\\.3=\\{blue\\}<attribute\\.modifier\\.plus\\.0\\(<neoforge\\.value\\.percent\\(10\\)>\\|<attribute\\.name\\.knockback_resistance>\\)>$",
+      "reason": "NeoForge shows knockback resistance as a percentage; the modifier value is the same (0.1)"
+    },
+    {
+      "match": "^interact/faktocraft:scrap_box/use [a-z_:]+: 1\\.20\\.1=act \\| held empty \\| drops \\S+ x1 26\\.3=act \\| held empty \\| drops \\S+ x1$",
+      "reason": "weighted roll over the scrap box recipe list, whose order differs between versions; rollDrop is identical and the weights are compared in machine_recipes"
+    },
+    {
+      "match": "^crafting/faktocraft:blasting/[a-z0-9_/]+/cookingTime: 1\\.20\\.1=100 26\\.3=200$",
+      "reason": "26.x vanilla blasting recipes are 200 ticks and the blast furnace cooks at speed 2 with any fuel; 200 keeps the 1.20.1 time of 100 ticks per item"
+    }
+  ]
+}

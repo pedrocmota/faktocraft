@@ -38,6 +38,8 @@ import com.faktocraft.common.item.impl.wrench.Wrench;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
@@ -92,12 +94,15 @@ public final class ModItems {
   public static final Item DIMENSIONAL_TELEPORT_ANCHOR = registerBlockItem(ModBlocks.DIMENSIONAL_TELEPORT_ANCHOR,
       Rarity.EPIC);
 
-  public static final Item RUBBER_LOG = fromBlock(ModBlocks.RUBBER_LOG);
+  public static final Item RUBBER_LOG = fuelBlock(ModBlocks.RUBBER_LOG, ContextIntProviders.COOKING_TIME_WOOD_BLOCKS);
   public static final Item RUBBER_WOOD = fromBlock(ModBlocks.RUBBER_WOOD);
   public static final Item RUBBER_LEAVES = fromBlock(ModBlocks.RUBBER_LEAVES);
-  public static final Item RUBBER_PLANKS = fromBlock(ModBlocks.RUBBER_PLANKS);
-  public static final Item DRIED_RUBBER_LOG = fromBlock(ModBlocks.DRIED_RUBBER_LOG);
-  public static final Item RUBBER_SAPLING = fromBlock(ModBlocks.RUBBER_SAPLING);
+  public static final Item RUBBER_PLANKS = fuelBlock(ModBlocks.RUBBER_PLANKS,
+      ContextIntProviders.COOKING_TIME_WOOD_BLOCKS);
+  public static final Item DRIED_RUBBER_LOG = fuelBlock(ModBlocks.DRIED_RUBBER_LOG,
+      ContextIntProviders.COOKING_TIME_WOOD_BLOCKS);
+  public static final Item RUBBER_SAPLING = fuelBlock(ModBlocks.RUBBER_SAPLING,
+      ContextIntProviders.COOKING_TIME_DRY_PLANTS);
   public static final Item RUBBER_STAIRS = fromBlock(ModBlocks.RUBBER_STAIRS);
   public static final Item RUBBER_SLAB = fromBlock(ModBlocks.RUBBER_SLAB);
 
@@ -404,6 +409,11 @@ public final class ModItems {
 
   private static Item fromBlock(Block block) {
     return registerBlockItem(block);
+  }
+
+  private static Item fuelBlock(Block block, ResourceKey<ContextIntProvider> burnTime) {
+    return registerBlockItemInternal(block, Rarity.COMMON,
+        (b, properties) -> new FaktocraftBlockItem(b, properties.cookingFuel(burnTime)));
   }
 
   public static Item registerBlockItem(Block block) {

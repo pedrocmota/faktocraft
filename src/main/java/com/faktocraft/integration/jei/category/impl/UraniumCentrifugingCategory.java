@@ -56,19 +56,20 @@ public class UraniumCentrifugingCategory extends AbstractRecipeCategory<UraniumC
 
     List<ChanceResult> bonuses = recipe.getBonusResult().getResults();
     if (!bonuses.isEmpty()) {
-      builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 29)
-          .addItemStacks(bonuses.stream().map(ChanceResult::stack).toList())
-          .addRichTooltipCallback((view, tooltip) -> view.getDisplayedItemStack().ifPresent(shown -> {
-            for (ChanceResult chanceResult : bonuses) {
-              if (ItemStack.isSameItemSameComponents(shown, chanceResult.stack())) {
-                tooltip.add(Component.translatable(EnumLang.CHANCE.getTranslationKey(),
-                    Component.literal((Math.round(chanceResult.chance() * 100.0) / 100.0) + "%")
-                        .withStyle(ChatFormatting.YELLOW))
-                    .withStyle(ChatFormatting.DARK_GRAY));
-                return;
-              }
-            }
-          }));
+      markChance(builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 29)
+          .addItemStacks(bonuses.stream().map(ChanceResult::stack).toList()),
+          bonuses.size() > 1 || bonuses.get(0).chance() < 100.0F)
+              .addRichTooltipCallback((view, tooltip) -> view.getDisplayedItemStack().ifPresent(shown -> {
+                for (ChanceResult chanceResult : bonuses) {
+                  if (ItemStack.isSameItemSameComponents(shown, chanceResult.stack())) {
+                    tooltip.add(Component.translatable(EnumLang.CHANCE.getTranslationKey(),
+                        Component.literal((Math.round(chanceResult.chance() * 100.0) / 100.0) + "%")
+                            .withStyle(ChatFormatting.YELLOW))
+                        .withStyle(ChatFormatting.DARK_GRAY));
+                    return;
+                  }
+                }
+              }));
     }
   }
 

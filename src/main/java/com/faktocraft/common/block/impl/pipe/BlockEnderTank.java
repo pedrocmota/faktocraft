@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.pipe;
 
+import com.faktocraft.common.util.InteractionResults;
 import net.minecraft.world.item.Item;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -55,7 +56,7 @@ public class BlockEnderTank extends FaktocraftBlock implements EntityBlock, IHas
         if (handler != null) {
           FluidInteractionHelper.interactWithFluidHandler(player, hand, handler);
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResults.sided(level);
       }
     }
     return super.use(state, level, pos, player, hand, hitResult);

@@ -9,6 +9,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import com.faktocraft.common.screen.ClickRouting;
+import java.util.Optional;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public class ScreenQuarry extends AbstractContainerScreen<MenuQuarry>
     implements com.faktocraft.common.interfaces.screen.IGuiWrapper {
@@ -163,5 +167,25 @@ public class ScreenQuarry extends AbstractContainerScreen<MenuQuarry>
     GuiUtil.renderScaledToFit(graphics,
         Component.translatable("gui.faktocraft.quarry.status_" + STATUS_KEYS[code]).getString(),
         98, 7, 50, color);
+  }
+
+  private boolean routingSlots;
+
+  @Override
+  public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    if (ClickRouting.clickChildren(this, event, doubleClick)) {
+      return true;
+    }
+    routingSlots = true;
+    try {
+      return super.mouseClicked(event, doubleClick);
+    } finally {
+      routingSlots = false;
+    }
+  }
+
+  @Override
+  public Optional<GuiEventListener> getChildAt(double x, double y) {
+    return routingSlots ? Optional.empty() : super.getChildAt(x, y);
   }
 }

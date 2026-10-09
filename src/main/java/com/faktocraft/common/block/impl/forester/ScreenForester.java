@@ -14,6 +14,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import com.faktocraft.common.screen.ClickRouting;
+import java.util.Optional;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public class ScreenForester extends AbstractContainerScreen<MenuForester>
     implements com.faktocraft.common.interfaces.screen.IGuiWrapper {
@@ -225,5 +228,25 @@ public class ScreenForester extends AbstractContainerScreen<MenuForester>
     protected void updateWidgetNarration(NarrationElementOutput output) {
       defaultButtonNarrationText(output);
     }
+  }
+
+  private boolean routingSlots;
+
+  @Override
+  public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    if (ClickRouting.clickChildren(this, event, doubleClick)) {
+      return true;
+    }
+    routingSlots = true;
+    try {
+      return super.mouseClicked(event, doubleClick);
+    } finally {
+      routingSlots = false;
+    }
+  }
+
+  @Override
+  public Optional<GuiEventListener> getChildAt(double x, double y) {
+    return routingSlots ? Optional.empty() : super.getChildAt(x, y);
   }
 }

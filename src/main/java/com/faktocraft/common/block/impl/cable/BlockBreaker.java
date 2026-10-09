@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.cable;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.energy.provider.EnergyCore;
 import com.faktocraft.common.enums.EnergyTier;
 import com.faktocraft.common.tier.CableTier;
@@ -319,7 +320,7 @@ public class BlockBreaker extends BlockCable {
         final boolean current = be.isRedstoneOnly();
         com.faktocraft.common.util.ClientProxy.get().openRedstoneControlScreen(pos, current);
       }
-      return InteractionResult.SUCCESS;
+      return InteractionResults.sided(level);
     }
     if (!level.isClientSide()) {
       if (level.getBlockEntity(pos) instanceof BlockEntityBreaker be && be.isRedstoneOnly()) {
@@ -327,7 +328,7 @@ public class BlockBreaker extends BlockCable {
       }
       switchTo(level, pos, state, !state.getValue(ON));
     }
-    return InteractionResult.SUCCESS;
+    return InteractionResults.sided(level);
   }
 
   @Nullable

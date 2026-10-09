@@ -3,7 +3,7 @@
   "values": [
     "#minecraft:base_stone_overworld",
     "#minecraft:base_stone_nether",
-    "#minecraft:dirt",
+    "#minecraft:substrate_overworld",
     "#minecraft:sand",
     "#minecraft:terracotta",
     "#minecraft:logs",
@@ -11,7 +11,7 @@
     "#minecraft:snow",
     "#c:ores",
     "#c:gravels",
-    "#c:obsidians",
+    "#c:obsidians/normal",
     "minecraft:terracotta",
     "minecraft:sandstone",
     "minecraft:red_sandstone",

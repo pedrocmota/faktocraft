@@ -307,6 +307,9 @@ public class ScreenModule extends AbstractContainerScreen<MenuModule> {
       if (treePanel.mouseClicked(left, top, mouseX, mouseY, button)) {
         if (search != null && search.isFocused() && !search.isMouseOver(mouseX, mouseY)) {
           search.setFocused(false);
+          if (getFocused() == search) {
+            setFocused(null);
+          }
         }
         return true;
       }
@@ -360,6 +363,9 @@ public class ScreenModule extends AbstractContainerScreen<MenuModule> {
     if (search != null && search.isFocused()) {
       if (keyCode == InputConstants.KEY_ESCAPE) {
         search.setFocused(false);
+        if (getFocused() == search) {
+          setFocused(null);
+        }
         return true;
       }
       if (search.keyPressed(event)) {

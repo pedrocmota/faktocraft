@@ -68,6 +68,7 @@ neoForge {
             systemProperty 'faktocraft.energyAudit', (project.findProperty('energyAudit') ?: 'false').toString()
             systemProperty 'faktocraft.testFilter', (project.findProperty('tests') ?: '').toString()
             systemProperty 'faktocraft.legacyFixture', (project.findProperty('legacyFixture') ?: '').toString()
+            systemProperty 'faktocraft.parityFixture', file('docs/fixtures/parity-1201').absolutePath
         }
 
         data {

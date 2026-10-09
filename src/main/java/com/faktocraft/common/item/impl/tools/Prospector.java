@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl.tools;
 
+import com.faktocraft.common.util.InteractionResults;
 import net.minecraft.world.item.Item;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -68,6 +69,9 @@ public class Prospector extends ElectricItem {
   public void inventoryTick(ItemStack stack, net.minecraft.server.level.ServerLevel serverLevel,
       net.minecraft.world.entity.Entity owner, @Nullable EquipmentSlot slot) {
     super.inventoryTick(stack, serverLevel, owner, slot);
+    if (!(owner instanceof Player)) {
+      return;
+    }
     importLegacyScans(serverLevel, stack);
     CompoundTag job = getJob(stack);
     if (job == null) {
@@ -156,7 +160,7 @@ public class Prospector extends ElectricItem {
     if (level.isClientSide()) {
       com.faktocraft.common.util.ClientProxy.get().openProspectorScreen();
     }
-    return InteractionResult.SUCCESS;
+    return InteractionResults.sided(level);
   }
 
   @Override

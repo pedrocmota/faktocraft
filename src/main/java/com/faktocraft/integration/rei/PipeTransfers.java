@@ -2,9 +2,9 @@ package com.faktocraft.integration.rei;
 
 import com.faktocraft.Faktocraft;
 import com.faktocraft.common.block.impl.logistics.BlockEntityCraftPipe;
-import com.faktocraft.common.block.impl.logistics.BlockEntityRecipePipe;
 import com.faktocraft.common.block.impl.logistics.MenuCraftPipe;
 import com.faktocraft.common.block.impl.logistics.MenuRecipePipe;
+import com.faktocraft.common.block.impl.logistics.RecipeImport;
 import com.faktocraft.common.network.ModNetworking;
 import com.faktocraft.common.network.packet.PacketCraftPattern;
 import com.faktocraft.common.network.packet.PacketRecipePipeFill;
@@ -43,18 +43,34 @@ public final class PipeTransfers {
     return id.equals(BuiltinPlugin.CRAFTING);
   }
 
-  private static List<ItemStack> collect(List<EntryIngredient> ingredients, int max) {
-    List<ItemStack> stacks = new ArrayList<>();
-    for (EntryIngredient ingredient : ingredients) {
-      if (stacks.size() >= max) {
-        break;
+  private static void addSlots(List<RecipeImport.Slot> slots, Display display, boolean input) {
+    List<EntryIngredient> entries = input ? display.getInputEntries() : display.getOutputEntries();
+    for (int index = 0; index < entries.size(); index++) {
+      EntryIngredient ingredient = entries.get(index);
+      List<ItemStack> items = new ArrayList<>();
+      for (EntryStack<?> stack : ingredient) {
+        if (items.size() >= RecipeImport.SCAN_LIMIT) {
+          break;
+        }
+        if (stack.getType() == VanillaEntryTypes.ITEM) {
+          ItemStack item = stack.castValue();
+          if (!item.isEmpty()) {
+            items.add(item);
+          }
+        }
       }
-      ItemStack stack = firstItem(ingredient);
-      if (!stack.isEmpty()) {
-        stacks.add(stack);
-      }
+      boolean chance = !input && display instanceof MachineDisplay machine && machine.chanceOutput(index);
+      slots.add(new RecipeImport.Slot(input, items, ItemStack.EMPTY, chance,
+          items.isEmpty() && !ingredient.isEmpty()));
     }
-    return stacks;
+  }
+
+  private static RecipeImport.Plan plan(Display display) {
+    List<RecipeImport.Slot> slots = new ArrayList<>();
+    addSlots(slots, display, true);
+    addSlots(slots, display, false);
+    boolean brewing = display.getCategoryIdentifier().equals(BuiltinPlugin.BREWING);
+    return RecipeImport.plan(slots, brewing ? RecipeImport.BREWING_BATCH : 1);
   }
 
   public static final TransferHandler CRAFT_PIPE_PATTERN = context -> {
@@ -83,16 +99,20 @@ public final class PipeTransfers {
       return TransferHandler.Result.createFailed(
           Component.translatable("logistics." + Faktocraft.MODID + ".craft.transfer_crafting"));
     }
-    List<ItemStack> inputs = collect(display.getInputEntries(), BlockEntityRecipePipe.MAX_INPUTS);
-    List<ItemStack> outputs = collect(display.getOutputEntries(), BlockEntityRecipePipe.MAX_OUTPUTS);
-    if (inputs.isEmpty() || outputs.isEmpty()) {
-      return TransferHandler.Result.createFailed(
-          Component.translatable("logistics." + Faktocraft.MODID + ".craft.transfer_items_only"));
+    RecipeImport.Plan plan = plan(display);
+    Component problem = RecipeImport.problem(plan);
+    if (problem != null) {
+      return TransferHandler.Result.createFailed(problem);
     }
     if (!context.isActuallyCrafting()) {
-      return TransferHandler.Result.createSuccessful();
+      TransferHandler.Result preview = TransferHandler.Result.createSuccessful();
+      for (Component line : RecipeImport.describe(plan)) {
+        preview = preview.tooltip(line);
+      }
+      return preview;
     }
-    ModNetworking.sendToServer(new PacketRecipePipeFill(menu.getPipePos(), inputs, outputs));
+    ModNetworking.sendToServer(new PacketRecipePipeFill(menu.getPipePos(), plan.inputs(), plan.outputs(),
+        plan.batch()));
     return TransferHandler.Result.createSuccessful().blocksFurtherHandling();
   };
 }

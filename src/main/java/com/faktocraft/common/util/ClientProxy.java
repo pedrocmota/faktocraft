@@ -1,6 +1,7 @@
 package com.faktocraft.common.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -28,6 +29,11 @@ public interface ClientProxy {
 
   static void set(ClientProxy proxy) {
     Holder.instance = proxy;
+  }
+
+  @Nullable
+  default HolderLookup.Provider clientThreadRegistries() {
+    return null;
   }
 
   default void startTileSound(SoundEvent sound, float volume, BlockPos pos) {

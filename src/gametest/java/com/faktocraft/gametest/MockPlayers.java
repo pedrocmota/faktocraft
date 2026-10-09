@@ -16,6 +16,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.GameType;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.network.registration.ChannelAttributes;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import java.util.Map;
 
 public final class MockPlayers {
 
@@ -28,6 +33,11 @@ public final class MockPlayers {
         out.add(message);
       }
       return out;
+    }
+
+    public List<Object> flushAndDrainOutbound() {
+      channel.flushOutbound();
+      return drainOutbound();
     }
 
     public <P extends Packet<?>> List<P> drainOutbound(Class<P> type) {
@@ -43,6 +53,20 @@ public final class MockPlayers {
     public void walk(double x, double y, double z) {
       player.connection.handleMovePlayer(new ServerboundMovePlayerPacket.Pos(x, y, z, true, false));
       player.connection.handleClientTickEnd(ServerboundClientTickEndPacket.INSTANCE);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void allowAllPayloads() {
+      try {
+        var field = NetworkRegistry.class.getDeclaredField("PAYLOAD_REGISTRATIONS");
+        field.setAccessible(true);
+        Map<ConnectionProtocol, Map<Identifier, ?>> registrations =
+            (Map<ConnectionProtocol, Map<Identifier, ?>>) field.get(null);
+        ChannelAttributes.getOrCreateAdHocChannels(player.connection.getConnection())
+            .addAll(registrations.getOrDefault(ConnectionProtocol.PLAY, Map.of()).keySet());
+      } catch (ReflectiveOperationException e) {
+        throw new IllegalStateException(e);
+      }
     }
 
     public void remove() {

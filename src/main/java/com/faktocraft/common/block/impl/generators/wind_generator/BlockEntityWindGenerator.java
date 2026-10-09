@@ -154,7 +154,7 @@ public class BlockEntityWindGenerator extends FaktocraftBlockEntity implements I
       double push = (axial >= 0 ? 1 : -1) * 0.35;
       entity.setDeltaMovement(entity.getDeltaMovement()
           .add(alongZ ? 0 : push, 0, alongZ ? push : 0));
-      entity.needsSync = true;
+      entity.syncVelocity = true;
       if (spinning && entity instanceof net.minecraft.world.entity.LivingEntity living) {
         living.hurtServer(serverLevel, com.faktocraft.common.registries.ModDamageTypes.rotor(serverLevel), 4.0F);
       }

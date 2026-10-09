@@ -6,8 +6,8 @@ import com.faktocraft.common.util.transfer.CapabilityBridge;
 import com.faktocraft.common.util.transfer.IFluidHandler;
 import com.faktocraft.common.util.transfer.IFluidHandlerItem;
 import com.faktocraft.common.util.transfer.IItemHandler;
-import com.faktocraft.common.util.transfer.InvWrapper;
 import com.faktocraft.common.util.transfer.ItemHandlerHelper;
+import com.faktocraft.common.util.transfer.PlayerInvWrapper;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -120,7 +120,7 @@ public final class FluidInteractionHelper {
     }
 
     FluidActionResult result = tryEmptyContainerAndStow(stack, tank,
-        new InvWrapper(player.getInventory()), Integer.MAX_VALUE, player, true);
+        PlayerInvWrapper.container(player.getInventory()), Integer.MAX_VALUE, player, true);
     if (result.isSuccess()) {
       player.setItemInHand(hand, result.getResult());
       return true;
@@ -288,7 +288,7 @@ public final class FluidInteractionHelper {
     if (heldItem.isEmpty()) {
       return false;
     }
-    IItemHandler playerInventory = new InvWrapper(player.getInventory());
+    IItemHandler playerInventory = PlayerInvWrapper.of(player.getInventory());
     FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory,
         Integer.MAX_VALUE, player, true);
     if (!fluidActionResult.isSuccess()) {

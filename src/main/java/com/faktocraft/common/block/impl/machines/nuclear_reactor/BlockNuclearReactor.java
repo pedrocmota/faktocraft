@@ -1,5 +1,6 @@
 package com.faktocraft.common.block.impl.machines.nuclear_reactor;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.util.PlayerMessages;
 import com.faktocraft.Faktocraft;
 import com.faktocraft.common.container.FaktocraftMenuProvider;
@@ -200,7 +201,7 @@ public class BlockNuclearReactor extends Block implements EntityBlock, IHasMenu 
             buf -> buf.writeBlockPos(core));
       }
     }
-    return InteractionResult.SUCCESS;
+    return InteractionResults.sided(level);
   }
 
   @Override

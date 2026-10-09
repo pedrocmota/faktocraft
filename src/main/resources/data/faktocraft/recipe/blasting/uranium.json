@@ -1,6 +1,6 @@
 {
   "type": "minecraft:blasting",
-  "cookingtime": 100,
+  "cookingtime": 200,
   "experience": 1.5,
   "ingredient": "faktocraft:deepslate_uranium_ore",
   "result": "faktocraft:raw_uranium"

@@ -1,5 +1,6 @@
 package com.faktocraft.common.item.impl.wrench;
 
+import com.faktocraft.common.util.InteractionResults;
 import com.faktocraft.common.enums.EnergyTier;
 import com.faktocraft.common.enums.EnergyType;
 import com.faktocraft.common.item.base.ElectricItem;
@@ -22,7 +23,7 @@ public class ElectricWrench extends ElectricItem {
     BlockPos pos = context.getClickedPos();
     return WrenchHelper.onWrenchUse(level.getBlockState(pos), level, pos, context.getPlayer(), context.getHand(),
         context.getClickedFace())
-            ? InteractionResult.SUCCESS
+            ? InteractionResults.serverSwing(level)
             : InteractionResult.PASS;
   }
 
