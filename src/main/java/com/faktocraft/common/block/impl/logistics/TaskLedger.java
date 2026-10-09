@@ -944,17 +944,22 @@ public final class TaskLedger {
   }
 
   public boolean outputInUse(BlockPos assemblyPos) {
+    return claimedResult(assemblyPos) != null;
+  }
+
+  @Nullable
+  public ItemKey claimedResult(BlockPos assemblyPos) {
     for (RequestJob job : jobs) {
       if (job.error != null) {
         continue;
       }
       for (StepData step : job.steps) {
         if (step.claimed && step.output().pos().equals(assemblyPos)) {
-          return true;
+          return ItemKey.of(step.result);
         }
       }
     }
-    return false;
+    return null;
   }
 
   public boolean hasActiveJobFor(Endpoint dest) {

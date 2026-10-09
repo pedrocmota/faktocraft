@@ -622,6 +622,7 @@ public class ScreenRequestTable extends AbstractContainerScreen<MenuRequestTable
         graphics.fill(x - 1, y - 1, x + 17, y + 17, 0x8033AAFF);
       }
       graphics.item(entry.stack(), x, y);
+      graphics.itemDecorations(this.font, entry.stack(), x, y, "");
       if (entry.blocked()) {
 
         graphics.fill(x, y, x + 16, y + 16, 0xB0787878);

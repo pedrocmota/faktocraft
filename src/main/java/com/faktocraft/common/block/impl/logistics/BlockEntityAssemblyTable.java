@@ -146,9 +146,10 @@ public class BlockEntityAssemblyTable extends FaktocraftBlockEntity
   }
 
   private int pickRecipe(BlockEntityCraftPipe pipe) {
+    ItemKey wanted = wantedResult(pipe);
     if (activeRecipe >= 0 && activeRecipe < pipe.recipeCount()) {
       CraftingRecipe recipe = pipe.patternRecipe(activeRecipe);
-      if (recipe != null && tryCraft(pipe, activeRecipe, recipe, true)) {
+      if (recipe != null && makes(pipe, activeRecipe, wanted) && tryCraft(pipe, activeRecipe, recipe, true)) {
         return activeRecipe;
       }
     }
@@ -157,11 +158,24 @@ public class BlockEntityAssemblyTable extends FaktocraftBlockEntity
         continue;
       }
       CraftingRecipe recipe = pipe.patternRecipe(index);
-      if (recipe != null && tryCraft(pipe, index, recipe, true)) {
+      if (recipe != null && makes(pipe, index, wanted) && tryCraft(pipe, index, recipe, true)) {
         return index;
       }
     }
     return -1;
+  }
+
+  @Nullable
+  private ItemKey wantedResult(BlockEntityCraftPipe pipe) {
+    if (level == null) {
+      return null;
+    }
+    BlockEntityLogisticsController core = LogisticsCores.coreFor(level, pipe.getBlockPos());
+    return core != null ? core.getLedger().claimedResult(worldPosition) : null;
+  }
+
+  private static boolean makes(BlockEntityCraftPipe pipe, int index, @Nullable ItemKey wanted) {
+    return wanted == null || wanted.equals(ItemKey.of(pipe.patternResult(index)));
   }
 
   @Override
