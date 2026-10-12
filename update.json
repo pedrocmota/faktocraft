@@ -5,7 +5,7 @@
     "26.3-recommended": "1.0.0"
   },
   "26.3": {
-    "1.0.0": "First stable release on NeoForge 26.3.0.76. Shared assembly tables craft only the claimed recipe, request table shows stack counts, jetpack no longer touches the packet listener during item registration, update notifications in chat.",
+    "1.0.0": "First stable release on NeoForge 26.3.0.76. Update notifications in chat (client toggle). Quarry and forester refuse placement when anything sits where the frame goes; the quarry builds its frame first and mines the inside from the top, and flowers cost no energy. Landmarks no longer merge neighbouring sets. Smoother gantry head animation. Machine input slots reject invalid items on the client without flickering. Pump accepts efficiency upgrades. Shared assembly tables craft only the claimed recipe; request table shows stack counts. Jetpack no longer touches the packet listener during item registration.",
     "0.0.3": "Fix port regressions, add parity tests, improve recipe pipe import.",
     "0.0.2": "Fix port bugs, faster base quarry, extractor consumes treetaps, performance improvements."
   }
