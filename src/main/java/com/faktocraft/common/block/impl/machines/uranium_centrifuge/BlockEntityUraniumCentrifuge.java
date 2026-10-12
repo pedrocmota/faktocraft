@@ -49,10 +49,7 @@ public class BlockEntityUraniumCentrifuge extends BlockEntityStandardMachine {
     if (slot != INPUT_SLOT) {
       return false;
     }
-    if (level instanceof ServerLevel serverLevel) {
-      return quickCheck.getRecipeFor(MachineRecipeInput.of(stack), serverLevel).isPresent();
-    }
-    return true;
+    return quickCheck.getRecipeFor(MachineRecipeInput.of(stack), level).isPresent();
   }
 
   @Override

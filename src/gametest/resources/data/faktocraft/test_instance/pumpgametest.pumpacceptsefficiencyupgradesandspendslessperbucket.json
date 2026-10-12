@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "faktocraft:pumpgametest.pumpacceptsefficiencyupgradesandspendslessperbucket",
+  "environment": "minecraft:default",
+  "structure": "faktocraft:gametest_shaft",
+  "max_ticks": 100,
+  "sky_access": true
+}

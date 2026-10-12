@@ -27,6 +27,7 @@ public final class BasicConfig {
   public static final class Client {
 
     public final ModConfigSpec.BooleanValue showPipeSupports;
+    public final ModConfigSpec.BooleanValue notifyUpdates;
 
     private Client(ModConfigSpec.Builder builder) {
       builder.push("visual");
@@ -34,6 +35,12 @@ public final class BasicConfig {
           .comment("Draw the small legs that hold pipes and cables against nearby blocks.",
               "Purely cosmetic: it changes nothing about how they work.")
           .define("showPipeSupports", true);
+      builder.pop();
+      builder.push("updates");
+      notifyUpdates = builder
+          .comment("Show a chat message when joining a world if a newer Faktocraft version is available.",
+              "Has no effect when NeoForge's global version check is disabled.")
+          .define("notifyUpdates", true);
       builder.pop();
     }
   }
@@ -90,6 +97,10 @@ public final class BasicConfig {
 
   public static boolean showPipeSupports() {
     return read(CLIENT_SPEC, CLIENT.showPipeSupports);
+  }
+
+  public static boolean notifyUpdates() {
+    return read(CLIENT_SPEC, CLIENT.notifyUpdates);
   }
 
   public static boolean teleportAnchorEnabled() {

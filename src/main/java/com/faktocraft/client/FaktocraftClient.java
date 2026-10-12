@@ -432,6 +432,11 @@ public class FaktocraftClient {
   }
 
   @SubscribeEvent
+  public static void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+    UpdateNotice.onLogin();
+  }
+
+  @SubscribeEvent
   public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
     RecipeUtil.setClientRecipes(RecipeMap.EMPTY);
     ChunkBorderOverlay.reset();
@@ -482,6 +487,7 @@ public class FaktocraftClient {
     ToolWorkAnimation.tick(minecraft);
     VeinMiningKey.tick(minecraft);
     LocalPlayer player = minecraft.player;
+    UpdateNotice.tick(player);
     if (player != null && minecraft.level != null && !minecraft.isPaused()) {
       ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
       if (chest.getItem() instanceof JetpackItem jetpack) {

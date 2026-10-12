@@ -56,7 +56,7 @@ public class MenuPump extends AbstractContainerMenu {
         addSlot(new Slot(pump.getUpgrades(), i, 80 + i * 18, 22) {
           @Override
           public boolean mayPlace(ItemStack stack) {
-            return PipeExtractor.isOverclocker(stack);
+            return PipeExtractor.isMotorUpgrade(stack);
           }
 
           @Override
@@ -134,7 +134,7 @@ public class MenuPump extends AbstractContainerMenu {
       if (!moveItemStackTo(stack, 2, 3, false)) {
         return ItemStack.EMPTY;
       }
-    } else if (PipeExtractor.isOverclocker(stack)) {
+    } else if (PipeExtractor.isMotorUpgrade(stack)) {
       if (!moveItemStackTo(stack, 3, 6, false)) {
         return ItemStack.EMPTY;
       }

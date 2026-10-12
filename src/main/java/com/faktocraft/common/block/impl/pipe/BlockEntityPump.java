@@ -58,20 +58,28 @@ public class BlockEntityPump extends FaktocraftBlockEntity
     return upgrades;
   }
 
-  private int boostPoints() {
+  private int points(com.faktocraft.common.enums.UpgradeType type) {
     int points = 0;
     for (int i = 0; i < upgrades.getSlots(); i++) {
       var stack = upgrades.getStackInSlot(i);
-      if (PipeExtractor.isOverclocker(stack)) {
-        points += ((com.faktocraft.common.interfaces.item.IUpgradeItem) stack.getItem())
-            .isAdvancedUpgrade() ? 3 : 1;
+      if (stack.getItem() instanceof com.faktocraft.common.interfaces.item.IUpgradeItem upgrade
+          && upgrade.getUpgradeType() == type) {
+        points += upgrade.isAdvancedUpgrade() ? 3 : 1;
       }
     }
     return Math.min(points, 8);
   }
 
+  private int boostPoints() {
+    return points(com.faktocraft.common.enums.UpgradeType.OVERCLOCKER);
+  }
+
+  private int efficiencyPoints() {
+    return points(com.faktocraft.common.enums.UpgradeType.EFFICIENCY);
+  }
+
   public int energyPerBucket() {
-    return (int) Math.ceil(ENERGY_PER_BUCKET * Math.pow(1.6, boostPoints()));
+    return (int) Math.ceil(ENERGY_PER_BUCKET * Math.pow(1.6, boostPoints()) * Math.pow(0.85, efficiencyPoints()));
   }
 
   public int maxDrawPerTick() {

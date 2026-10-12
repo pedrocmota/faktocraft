@@ -45,7 +45,7 @@ Faktocraft is a modern successor of several classic tech mods - **IndustrialCraf
 
 ## Requirements
 
-- **Minecraft 26.3 with NeoForge** (26.3.0 beta or newer) - the `26.3` branch. The 1.20.1 Forge version lives on the `main` branch and keeps receiving fixes only.
+- **Minecraft 26.3 with NeoForge** (26.3.0.76 or newer) - the `26.3` branch. The 1.20.1 Forge version lives on the `main` branch and keeps receiving fixes only.
 - Java 25 (bundled with the launcher).
 
 ## Compatibility

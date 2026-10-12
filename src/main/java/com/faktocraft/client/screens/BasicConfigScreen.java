@@ -34,6 +34,9 @@ public class BasicConfigScreen extends Screen {
 
     addToggle(left, y, "gui.faktocraft.config.show_pipe_supports",
         BasicConfig.CLIENT.showPipeSupports, BasicConfig.CLIENT_SPEC, true);
+    y += ROW_HEIGHT;
+    addToggle(left, y, "gui.faktocraft.config.notify_updates",
+        BasicConfig.CLIENT.notifyUpdates, BasicConfig.CLIENT_SPEC, true);
     y += ROW_HEIGHT + 10;
 
     boolean editable = serverEditable();

@@ -1,0 +1,12 @@
+{
+  "homepage": "https://www.curseforge.com/minecraft/mc-mods/faktocraft",
+  "promos": {
+    "26.3-latest": "1.0.0",
+    "26.3-recommended": "1.0.0"
+  },
+  "26.3": {
+    "1.0.0": "First stable release on NeoForge 26.3.0.76. Shared assembly tables craft only the claimed recipe, request table shows stack counts, jetpack no longer touches the packet listener during item registration, update notifications in chat.",
+    "0.0.3": "Fix port regressions, add parity tests, improve recipe pipe import.",
+    "0.0.2": "Fix port bugs, faster base quarry, extractor consumes treetaps, performance improvements."
+  }
+}

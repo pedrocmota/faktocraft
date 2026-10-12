@@ -215,11 +215,6 @@ public class BlockEntityForester extends BlockEntityGantry {
   }
 
   @Override
-  protected boolean clearsInterior() {
-    return false;
-  }
-
-  @Override
   protected IItemHandler externalItemHandler() {
     return external;
   }

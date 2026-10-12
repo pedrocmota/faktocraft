@@ -151,12 +151,23 @@ public class BlockLandmark extends Block implements EntityBlock, IBlockHoverText
       if (before == null || after == null || !after.equals(findPartner(level, before, negative.getOpposite()))) {
         continue;
       }
-      int[] rect = resolveRect(level, before);
-      if (rect != null) {
-        return rect;
+      for (BlockPos start : new BlockPos[] { before, after }) {
+        int[] rect = resolveRect(level, start);
+        if (rect != null && onPerimeter(rect, spot)) {
+          return rect;
+        }
       }
     }
     return null;
+  }
+
+  private static boolean onPerimeter(int[] rect, BlockPos spot) {
+    int x = spot.getX();
+    int z = spot.getZ();
+    if (x < rect[0] || x > rect[1] || z < rect[2] || z > rect[3]) {
+      return false;
+    }
+    return x == rect[0] || x == rect[1] || z == rect[2] || z == rect[3];
   }
 
   @Nullable
@@ -204,8 +215,12 @@ public class BlockLandmark extends Block implements EntityBlock, IBlockHoverText
 
   @Nullable
   private static BlockPos partnerOnAxis(BlockGetter level, BlockPos from, Direction first, Direction second) {
-    BlockPos partner = findPartner(level, from, first);
-    return partner != null ? partner : findPartner(level, from, second);
+    BlockPos a = findPartner(level, from, first);
+    BlockPos b = findPartner(level, from, second);
+    if (a == null || b == null) {
+      return a != null ? a : b;
+    }
+    return from.distManhattan(a) <= from.distManhattan(b) ? a : b;
   }
 
   @Override

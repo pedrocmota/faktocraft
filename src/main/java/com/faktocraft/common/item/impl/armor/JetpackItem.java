@@ -44,12 +44,6 @@ public class JetpackItem extends BaseArmor implements CapabilityBridge.IFluidHan
   public static final int GLIDE_MB_PER_4_TICKS = 1;
   public static final int BOOST_MB_PER_TICK = 6;
 
-  @Nullable
-  private static final Field ABOVE_GROUND_TICKS = findFloatingField("aboveGroundTickCount");
-
-  @Nullable
-  private static final Field ABOVE_GROUND_VEHICLE_TICKS = findFloatingField("aboveGroundVehicleTickCount");
-
   private final int capacityMb;
 
   public JetpackItem(Properties properties) {
@@ -110,16 +104,24 @@ public class JetpackItem extends BaseArmor implements CapabilityBridge.IFluidHan
     }
   }
 
+  private static final class FloatingFields {
+    @Nullable
+    static final Field ABOVE_GROUND_TICKS = findFloatingField("aboveGroundTickCount");
+
+    @Nullable
+    static final Field ABOVE_GROUND_VEHICLE_TICKS = findFloatingField("aboveGroundVehicleTickCount");
+  }
+
   @Nullable
   private static Field findFloatingField(String name) {
     try {
       return ObfuscationReflectionHelper.findField(ServerGamePacketListenerImpl.class, name);
-    } catch (Exception helperFailure) {
+    } catch (Throwable helperFailure) {
       try {
         Field field = ServerGamePacketListenerImpl.class.getDeclaredField(name);
         field.setAccessible(true);
         return field;
-      } catch (Exception reflectionFailure) {
+      } catch (Throwable reflectionFailure) {
         return null;
       }
     }
@@ -130,8 +132,8 @@ public class JetpackItem extends BaseArmor implements CapabilityBridge.IFluidHan
     if (connection == null) {
       return;
     }
-    resetFloatingField(ABOVE_GROUND_TICKS, connection);
-    resetFloatingField(ABOVE_GROUND_VEHICLE_TICKS, connection);
+    resetFloatingField(FloatingFields.ABOVE_GROUND_TICKS, connection);
+    resetFloatingField(FloatingFields.ABOVE_GROUND_VEHICLE_TICKS, connection);
   }
 
   private static void resetFloatingField(@Nullable Field field, ServerGamePacketListenerImpl connection) {

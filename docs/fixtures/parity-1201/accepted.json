@@ -80,6 +80,10 @@
     {
       "match": "^crafting/faktocraft:blasting/[a-z0-9_/]+/cookingTime: 1\\.20\\.1=100 26\\.3=200$",
       "reason": "26.x vanilla blasting recipes are 200 ticks and the blast furnace cooks at speed 2 with any fuel; 200 keeps the 1.20.1 time of 100 ticks per item"
+    },
+    {
+      "match": "^menus/faktocraft:pump/(shift/faktocraft:(advanced_)?efficiency_upgrade: only in 26\\.3: .*|slots/[345]/accepts: gained \\[faktocraft:advanced_efficiency_upgrade, faktocraft:efficiency_upgrade\\])$",
+      "reason": "26.3 pump upgrade slots accept efficiency upgrades and discount the energy per bucket, matching the extractor pipe; 1.20.1 only ever took overclockers"
     }
   ]
 }

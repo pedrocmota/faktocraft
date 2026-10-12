@@ -2,6 +2,8 @@ package com.faktocraft.gametest.fluids;
 
 import com.faktocraft.common.util.NbtBridge;
 import com.faktocraft.common.block.impl.pipe.BlockEntityPump;
+import com.faktocraft.common.block.impl.pipe.MenuPump;
+import com.faktocraft.common.registries.ModItems;
 import com.faktocraft.common.registries.PipeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,9 +11,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import com.faktocraft.common.util.transfer.CapabilityBridge;
 import com.faktocraft.common.util.transfer.ForgeCapabilities;
 import com.faktocraft.gametest.GameTest;
+import com.faktocraft.gametest.MockPlayers;
 import com.faktocraft.gametest.TestUtil;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
 public class PumpGameTest {
@@ -243,5 +247,50 @@ public class PumpGameTest {
       }
     });
     succeedWhenPumped(helper);
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 100)
+  public static void pumpAcceptsEfficiencyUpgradesAndSpendsLessPerBucket(GameTestHelper helper) {
+    clearShaft(helper);
+    helper.setBlock(PUMP_POS, PipeRegistry.PUMP.defaultBlockState());
+    BlockPos playerAbs = helper.absolutePos(PUMP_POS.relative(Direction.NORTH, 2));
+    MockPlayers.Mock mock = MockPlayers.survival(helper, playerAbs.getX() + 0.5, playerAbs.getY(),
+        playerAbs.getZ() + 0.5);
+    mock.allowAllPayloads();
+
+    helper.startSequence()
+        .thenIdle(2)
+        .thenExecute(() -> {
+          if (!(TestUtil.blockEntity(helper, PUMP_POS) instanceof BlockEntityPump pump)) {
+            mock.remove();
+            helper.fail("no pump block entity");
+            return;
+          }
+          int plain = pump.energyPerBucket();
+          pump.getUpgrades().setStackInSlot(0, new ItemStack(ModItems.EFFICIENCY_UPGRADE));
+          int efficient = pump.energyPerBucket();
+          pump.getUpgrades().setStackInSlot(1, new ItemStack(ModItems.ADVANCED_EFFICIENCY_UPGRADE));
+          int advanced = pump.energyPerBucket();
+          pump.getUpgrades().setStackInSlot(0, ItemStack.EMPTY);
+          pump.getUpgrades().setStackInSlot(1, ItemStack.EMPTY);
+          MenuPump menu = new MenuPump(1, helper.getLevel(), helper.absolutePos(PUMP_POS),
+              mock.player().getInventory(), mock.player());
+          boolean accepted = false;
+          boolean overclockStillAccepted = false;
+          for (int i = 0; i < menu.slots.size(); i++) {
+            if (menu.slots.get(i).container == pump.getUpgrades()) {
+              accepted |= menu.slots.get(i).mayPlace(new ItemStack(ModItems.EFFICIENCY_UPGRADE));
+              overclockStillAccepted |= menu.slots.get(i).mayPlace(new ItemStack(ModItems.OVERCLOCKER_UPGRADE));
+            }
+          }
+          mock.remove();
+          helper.assertTrue(efficient < plain,
+              "efficiency upgrade did not lower the cost: " + plain + " -> " + efficient);
+          helper.assertTrue(advanced < efficient, "advanced efficiency upgrade did not lower the cost further: "
+              + efficient + " -> " + advanced);
+          helper.assertTrue(accepted, "pump upgrade slots refuse the efficiency upgrade");
+          helper.assertTrue(overclockStillAccepted, "pump upgrade slots refuse the overclocker upgrade");
+        })
+        .thenSucceed();
   }
 }

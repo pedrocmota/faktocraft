@@ -58,6 +58,7 @@ public final class RecipeUtil {
   public static void onDatapackSync(OnDatapackSyncEvent event) {
     event.sendRecipes(ModRecipeType.ALL);
     event.sendRecipes(RecipeType.CRAFTING);
+    event.sendRecipes(RecipeType.SMELTING);
   }
 
   @Nullable

@@ -92,4 +92,31 @@ public class GantrySpeedGameTest {
     }
     helper.succeed();
   }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 20)
+  public static void headPredictionNeverStepsBackwards(GameTestHelper helper) {
+    double speed = 0.5;
+    double[] goal = { 10.5, 7.0, 0.5 };
+    double[] synced = { 0.5, 7.0, 0.5 };
+    double[] client = { 0.5, 7.0, 0.5 };
+    double[] predicted = new double[3];
+    double lastX = client[0];
+    for (int tick = 1; tick <= 40; tick++) {
+      int syncTick = tick - tick % 5;
+      synced[0] = Math.min(goal[0], 0.5 + speed * syncTick);
+      for (int frame = 0; frame < 4; frame++) {
+        double now = tick + frame * 0.25;
+        com.faktocraft.common.block.impl.quarry.GantryHeadMotion.predict(synced, goal, speed, now - syncTick,
+            predicted);
+        com.faktocraft.common.block.impl.quarry.GantryHeadMotion.follow(client, predicted, speed, 0.25);
+        helper.assertTrue(client[0] + 1.0E-6 >= lastX, "head moved backwards at tick " + now
+            + ": " + lastX + " -> " + client[0]);
+        helper.assertTrue(Math.abs(client[0] - Math.min(goal[0], 0.5 + speed * now)) < 0.75,
+            "head drifted from the server path at tick " + now + ": " + client[0]);
+        lastX = client[0];
+      }
+    }
+    helper.assertTrue(Math.abs(client[0] - goal[0]) < 1.0E-6, "head did not settle on the goal: " + client[0]);
+    helper.succeed();
+  }
 }
