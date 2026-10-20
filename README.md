@@ -4,8 +4,6 @@
 
 Faktocraft is a modern successor of several classic tech mods - **IndustrialCraft 2**, **BuildCraft** and **Logistics Pipes** - brought together into a single mod: electrical machines, tiered power grids, item and fluid pipes, automated mining and a request-based logistics system.
 
-> ℹ️ The mod is in **beta**. The feature set is complete and every system has been played through, but balance is still being tuned and bugs may remain.
-
 ## Features
 
 ### Power
