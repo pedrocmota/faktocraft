@@ -1,7 +1,7 @@
 {
   "type": "minecraft:function",
   "function": "faktocraft:quarrygametest.neighbouringlandmarksetdoesnothijackthearea",
-  "environment": "minecraft:default",
+  "environment": "faktocraft:landmark_neighbours",
   "structure": "faktocraft:gametest_platform",
   "max_ticks": 600,
   "sky_access": true

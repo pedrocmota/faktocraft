@@ -244,6 +244,11 @@ public class MenuRequestTable extends AbstractContainerMenu {
   }
 
   @Override
+  public boolean canTakeItemForPickAll(ItemStack carried, Slot target) {
+    return target.container != result && super.canTakeItemForPickAll(carried, target);
+  }
+
+  @Override
   public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
     if (slotId == GHOST_INDEX && table != null) {
       table.setGhostTarget(getCarried());

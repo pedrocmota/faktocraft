@@ -196,7 +196,9 @@ public class BlockLandmark extends Block implements EntityBlock, IBlockHoverText
       alongZ = start;
       alongX = partnerOnAxis(level, corner, Direction.EAST, Direction.WEST);
     }
-    if (alongX == null || alongZ == null) {
+    if (alongX == null || alongZ == null
+        || !mutualPartners(level, corner, alongX, Direction.EAST, Direction.WEST)
+        || !mutualPartners(level, corner, alongZ, Direction.SOUTH, Direction.NORTH)) {
       return null;
     }
     return new int[] {
@@ -211,6 +213,12 @@ public class BlockLandmark extends Block implements EntityBlock, IBlockHoverText
         && quarryPos.getZ() >= rect[2] && quarryPos.getZ() <= rect[3];
     return width >= BlockEntityQuarry.MIN_FRAME_SPAN && depth >= BlockEntityQuarry.MIN_FRAME_SPAN
         && width <= BlockEntityQuarry.MAX_FRAME_SPAN && depth <= BlockEntityQuarry.MAX_FRAME_SPAN && !inside;
+  }
+
+  private static boolean mutualPartners(BlockGetter level, BlockPos corner, BlockPos arm, Direction first,
+      Direction second) {
+    return arm.equals(partnerOnAxis(level, corner, first, second))
+        && corner.equals(partnerOnAxis(level, arm, first, second));
   }
 
   @Nullable

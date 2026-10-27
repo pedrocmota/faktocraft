@@ -209,7 +209,7 @@ public class QuarryGameTest {
         .thenSucceed();
   }
 
-  @GameTest(template = TEMPLATE, timeoutTicks = 600)
+  @GameTest(template = TEMPLATE, timeoutTicks = 600, batch = "landmarkNeighbours")
   public static void neighbouringLandmarkSetDoesNotHijackTheArea(GameTestHelper helper) {
     helper.setBlock(MARK_CORNER, QuarryRegistry.LANDMARK.defaultBlockState());
     helper.setBlock(MARK_X, QuarryRegistry.LANDMARK.defaultBlockState());
