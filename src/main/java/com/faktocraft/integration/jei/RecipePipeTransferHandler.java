@@ -1,18 +1,19 @@
 package com.faktocraft.integration.jei;
 
 import com.faktocraft.Faktocraft;
-import com.faktocraft.common.block.impl.logistics.BlockEntityRecipePipe;
 import com.faktocraft.common.block.impl.logistics.LogisticsRegistry;
 import com.faktocraft.common.block.impl.logistics.MenuRecipePipe;
+import com.faktocraft.common.block.impl.logistics.RecipeImport;
 import com.faktocraft.common.network.ModNetworking;
 import com.faktocraft.common.network.packet.PacketRecipePipeFill;
-import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -49,29 +50,51 @@ public class RecipePipeTransferHandler implements IUniversalRecipeTransferHandle
       return helper.createUserErrorWithTooltip(
           Component.translatable("logistics." + Faktocraft.MODID + ".craft.transfer_crafting"));
     }
-    List<ItemStack> inputs = collect(recipeSlots, RecipeIngredientRole.INPUT, BlockEntityRecipePipe.MAX_INPUTS);
-    List<ItemStack> outputs = collect(recipeSlots, RecipeIngredientRole.OUTPUT, BlockEntityRecipePipe.MAX_OUTPUTS);
-    if (inputs.isEmpty() || outputs.isEmpty()) {
-      return helper.createUserErrorWithTooltip(
-          Component.translatable("logistics." + Faktocraft.MODID + ".craft.transfer_items_only"));
+    RecipeImport.Plan plan = RecipeImport.plan(slots(recipeSlots),
+        recipe instanceof IJeiBrewingRecipe ? RecipeImport.BREWING_BATCH : 1);
+    Component problem = RecipeImport.problem(plan);
+    if (problem != null) {
+      return helper.createUserErrorWithTooltip(problem);
     }
     if (!doTransfer) {
-      return null;
+      return new Preview(RecipeImport.describe(plan), !plan.notes().isEmpty());
     }
-    ModNetworking.sendToServer(new PacketRecipePipeFill(menu.getPipePos(), inputs, outputs));
+    ModNetworking.sendToServer(new PacketRecipePipeFill(menu.getPipePos(), plan.inputs(), plan.outputs(),
+        plan.batch()));
     return null;
   }
 
-  private static List<ItemStack> collect(IRecipeSlotsView recipeSlots, RecipeIngredientRole role, int max) {
-    List<ItemStack> stacks = new ArrayList<>();
-    for (IRecipeSlotView slot : recipeSlots.getSlotViews(role)) {
-      if (stacks.size() >= max) {
-        break;
+  private static List<RecipeImport.Slot> slots(IRecipeSlotsView recipeSlots) {
+    List<RecipeImport.Slot> slots = new ArrayList<>();
+    for (IRecipeSlotView view : recipeSlots.getSlotViews()) {
+      RecipeIngredientRole role = view.getRole();
+      if (role != RecipeIngredientRole.INPUT && role != RecipeIngredientRole.OUTPUT) {
+        continue;
       }
-      slot.getDisplayedIngredient(VanillaTypes.ITEM_STACK)
-          .filter(stack -> !stack.isEmpty())
-          .ifPresent(stacks::add);
+      List<ItemStack> items = view.getItemStacks().limit(RecipeImport.SCAN_LIMIT).toList();
+      slots.add(new RecipeImport.Slot(role == RecipeIngredientRole.INPUT, items,
+          view.getDisplayedItemStack().orElse(ItemStack.EMPTY),
+          view.getSlotName().filter(RecipeImport.CHANCE_SLOT::equals).isPresent(),
+          items.isEmpty() && !view.isEmpty()));
     }
-    return stacks;
+    return slots;
+  }
+
+  private record Preview(List<Component> lines, boolean warn) implements IRecipeTransferError {
+
+    @Override
+    public Type getType() {
+      return Type.COSMETIC;
+    }
+
+    @Override
+    public int getButtonHighlightColor() {
+      return warn ? IRecipeTransferError.super.getButtonHighlightColor() : 0;
+    }
+
+    @Override
+    public void getTooltip(ITooltipBuilder tooltip) {
+      tooltip.addAll(lines);
+    }
   }
 }

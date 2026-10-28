@@ -46,7 +46,7 @@ public class BlockEntityQuarry extends BlockEntityGantry {
     int width = maxX - minX - 1;
     int depth = maxZ - minZ - 1;
     long perLayer = (long) width * depth;
-    int topY = worldPosition.getY() - 1;
+    int topY = worldPosition.getY() + frameHeightAbove();
     int bottomY = serverLevel.getMinBuildHeight();
     long total = perLayer * (topY - bottomY + 1);
 
@@ -90,7 +90,7 @@ public class BlockEntityQuarry extends BlockEntityGantry {
       return STATUS_MINING;
     }
 
-    int cost = state.canBeReplaced() ? 0 : energyPerBlock();
+    int cost = breakCost(serverLevel, pos, state);
     int charge = chargeProgress(cost);
     if (charge == CHARGE_READY && headAtTarget()) {
       if (!dwellComplete()) {

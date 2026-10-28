@@ -365,6 +365,11 @@ public class FaktocraftClient {
     }
 
     @SubscribeEvent
+    public static void onLoggingIn(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingIn event) {
+      UpdateNotice.onLogin();
+    }
+
+    @SubscribeEvent
     public static void onLoggingOut(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
       com.faktocraft.client.render.ChunkBorderOverlay.reset();
       ToolWorkAnimation.clear();
@@ -398,6 +403,7 @@ public class FaktocraftClient {
       com.faktocraft.client.render.DrillCrackOverlay.tick(Minecraft.getInstance());
       ToolWorkAnimation.tick(Minecraft.getInstance());
       VeinMiningKey.tick(Minecraft.getInstance());
+      UpdateNotice.tick(Minecraft.getInstance().player);
       if (NIGHT_VISION_KEY == null) {
         return;
       }

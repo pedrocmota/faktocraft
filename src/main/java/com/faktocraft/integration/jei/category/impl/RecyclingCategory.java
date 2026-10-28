@@ -59,7 +59,8 @@ public class RecyclingCategory extends AbstractRecipeCategory<RecyclingRecipe> {
             .toList();
 
     builder.addSlot(RecipeIngredientRole.INPUT, 9, 19).addItemStacks(inputs);
-    builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 19).addItemStack(recipe.getResultItem())
+    markChance(builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 19).addItemStack(recipe.getResultItem()),
+        recipe.getChance() < 1.0F)
         .addRichTooltipCallback((view, tooltip) -> tooltip.add(
             Component.translatable(EnumLang.CHANCE.getTranslationKey(),
                 Component.literal((Math.round(recipe.getChance() * 100.0) / 100.0) + "%")

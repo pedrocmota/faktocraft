@@ -40,7 +40,7 @@ public class ScrapBoxCategory extends AbstractRecipeCategory<ScrapBoxRecipe> {
   @Override
   public void setRecipe(IRecipeLayoutBuilder builder, ScrapBoxRecipe recipe, IFocusGroup focuses) {
     builder.addSlot(RecipeIngredientRole.INPUT, 9, 6).addItemStack(new ItemStack(ModItems.SCRAP_BOX));
-    builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 6).addItemStack(recipe.getResultItem());
+    markChance(builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 6).addItemStack(recipe.getResultItem()), true);
   }
 
   @Override

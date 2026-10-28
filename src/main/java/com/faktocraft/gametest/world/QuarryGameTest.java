@@ -13,6 +13,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @GameTestHolder(Faktocraft.MODID)
 @PrefixGameTestTemplate(false)
@@ -214,5 +228,183 @@ public class QuarryGameTest {
           helper.assertTrue(quarry(helper).hasArea(), "area not resolved after completing the L");
         })
         .thenSucceed();
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 4000)
+  public static void unpoweredQuarryClearsFlowersAndBuildsItsFrame(GameTestHelper helper) {
+    helper.setBlock(MARK_CORNER, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_X, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_Z, QuarryRegistry.LANDMARK.defaultBlockState());
+    BlockPos ringFlower = new BlockPos(5, 2, 1);
+    BlockPos insideFlower = new BlockPos(5, 2, 5);
+    helper.setBlock(ringFlower.below(), Blocks.GRASS_BLOCK.defaultBlockState());
+    helper.setBlock(insideFlower.below(), Blocks.GRASS_BLOCK.defaultBlockState());
+    helper.setBlock(ringFlower, Blocks.POPPY.defaultBlockState());
+    helper.setBlock(insideFlower, Blocks.DANDELION.defaultBlockState());
+    place(helper, QUARRY, QuarryRegistry.QUARRY);
+
+    helper.startSequence()
+        .thenWaitUntil(() -> helper.assertTrue(quarry(helper).hasArea(), "area was not resolved from the landmarks"))
+        .thenWaitUntil(() -> {
+          BlockEntityQuarry quarry = quarry(helper);
+          helper.assertTrue(quarry.stage() >= BlockEntityQuarry.STAGE_WORK,
+              "unpowered quarry did not reach the work stage, status " + quarry.getStatus() + " stage " + quarry.stage()
+                  + " ring:" + ringReport(helper));
+          helper.assertBlockPresent(QuarryRegistry.QUARRY_FRAME, ringFlower);
+          helper.assertBlockNotPresent(Blocks.DANDELION, insideFlower);
+        })
+        .thenExecute(() -> {
+          helper.assertTrue(quarry(helper).getEnergyStorage().energyStored() == 0, "quarry spent energy it never had");
+          helper.assertTrue(inventoryContains(quarry(helper), Items.POPPY), "ring poppy was not collected");
+          helper.assertTrue(inventoryContains(quarry(helper), Items.DANDELION), "inside dandelion was not collected");
+        })
+        .thenSucceed();
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 200)
+  public static void blockOnTheRingRefusesPlacementWithAMessage(GameTestHelper helper) {
+    helper.setBlock(MARK_CORNER, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_X, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_Z, QuarryRegistry.LANDMARK.defaultBlockState());
+    BlockPos dirt = new BlockPos(5, 2, 1);
+    helper.setBlock(dirt, Blocks.DIRT.defaultBlockState());
+    helper.setBlock(QUARRY.below(), Blocks.STONE.defaultBlockState());
+    BlockPos quarryAbs = helper.absolutePos(QUARRY);
+    MessagePlayer player = new MessagePlayer(helper.getLevel(), helper.absolutePos(new BlockPos(5, 2, 5)));
+    BlockState refused = QuarryRegistry.QUARRY.getStateForPlacement(placeContext(helper, player, quarryAbs));
+    boolean warned = false;
+    StringBuilder seen = new StringBuilder();
+    for (Component message : player.messages) {
+      seen.append(' ').append(message.getString());
+      if (message.getContents() instanceof TranslatableContents contents
+          && contents.getKey().equals("chat.faktocraft.frame_obstructed")) {
+        warned = true;
+      }
+    }
+    helper.setBlock(dirt, Blocks.AIR.defaultBlockState());
+    BlockState allowed = QuarryRegistry.QUARRY.getStateForPlacement(placeContext(helper, player, quarryAbs));
+    helper.setBlock(MARK_CORNER, Blocks.AIR.defaultBlockState());
+    helper.setBlock(MARK_X, Blocks.AIR.defaultBlockState());
+    helper.setBlock(MARK_Z, Blocks.AIR.defaultBlockState());
+    helper.assertTrue(refused == null, "quarry was placeable with dirt on the ring");
+    helper.assertTrue(warned, "no obstruction message reached the player, chat seen:" + seen);
+    helper.assertTrue(allowed != null, "quarry was not placeable once the dirt was gone, ring:" + ringReport(helper));
+    helper.succeed();
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 4000)
+  public static void unpoweredQuarryBuildsItsFrameBeforeClearingTheInside(GameTestHelper helper) {
+    helper.setBlock(MARK_CORNER, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_X, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_Z, QuarryRegistry.LANDMARK.defaultBlockState());
+    BlockPos lower = new BlockPos(5, 2, 5);
+    BlockPos upper = new BlockPos(5, 3, 5);
+    helper.setBlock(lower, Blocks.DIRT.defaultBlockState());
+    helper.setBlock(upper, Blocks.DIRT.defaultBlockState());
+    place(helper, QUARRY, QuarryRegistry.QUARRY);
+
+    helper.startSequence()
+        .thenWaitUntil(() -> helper.assertTrue(quarry(helper).hasArea(), "area was not resolved from the landmarks"))
+        .thenWaitUntil(() -> {
+          BlockEntityQuarry quarry = quarry(helper);
+          helper.assertTrue(quarry.stage() >= BlockEntityQuarry.STAGE_WORK,
+              "unpowered quarry did not build its frame, status " + quarry.getStatus());
+          helper.assertBlockPresent(QuarryRegistry.QUARRY_FRAME, new BlockPos(5, 2, 1));
+          helper.assertBlockPresent(QuarryRegistry.QUARRY_FRAME, new BlockPos(1, 6, 1));
+          helper.assertTrue(quarry.getStatus() == BlockEntityQuarry.STATUS_NO_ENERGY,
+              "expected the quarry to wait for energy with its frame built, status " + quarry.getStatus());
+        })
+        .thenExecute(() -> {
+          helper.assertBlockPresent(Blocks.DIRT, upper);
+          helper.assertBlockPresent(Blocks.DIRT, lower);
+        })
+        .thenWaitUntil(() -> {
+          fillEnergy(helper);
+          helper.assertBlockNotPresent(Blocks.DIRT, upper);
+          helper.assertBlockNotPresent(Blocks.DIRT, lower);
+        })
+        .thenSucceed();
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 600, batch = "landmarkNeighbours")
+  public static void neighbouringLandmarkSetDoesNotHijackTheArea(GameTestHelper helper) {
+    helper.setBlock(MARK_CORNER, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_X, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(MARK_Z, QuarryRegistry.LANDMARK.defaultBlockState());
+    BlockPos otherCorner = new BlockPos(1, 2, -18);
+    BlockPos otherX = new BlockPos(10, 2, -18);
+    BlockPos otherZ = new BlockPos(1, 2, -9);
+    helper.setBlock(otherCorner, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(otherX, QuarryRegistry.LANDMARK.defaultBlockState());
+    helper.setBlock(otherZ, QuarryRegistry.LANDMARK.defaultBlockState());
+    place(helper, QUARRY, QuarryRegistry.QUARRY);
+
+    helper.startSequence()
+        .thenWaitUntil(() -> {
+          BlockEntityQuarry quarry = quarry(helper);
+          helper.assertTrue(quarry.hasArea(), "area was not resolved, status " + quarry.getStatus());
+        })
+        .thenExecute(() -> {
+          BlockEntityQuarry quarry = quarry(helper);
+          boolean own = quarry.areaMinZ() == helper.absolutePos(MARK_CORNER).getZ()
+              && quarry.areaMaxZ() == helper.absolutePos(MARK_Z).getZ()
+              && quarry.areaMinX() == helper.absolutePos(MARK_CORNER).getX()
+              && quarry.areaMaxX() == helper.absolutePos(MARK_X).getX();
+          helper.setBlock(otherCorner, Blocks.AIR.defaultBlockState());
+          helper.setBlock(otherX, Blocks.AIR.defaultBlockState());
+          helper.setBlock(otherZ, Blocks.AIR.defaultBlockState());
+          helper.assertTrue(own, "quarry adopted a rectangle mixed with the neighbouring landmark set");
+        })
+        .thenSucceed();
+  }
+
+  private static String ringReport(GameTestHelper helper) {
+    StringBuilder sb = new StringBuilder();
+    for (int y = 2; y <= 6; y++) {
+      for (int x = 1; x <= 10; x++) {
+        for (int z = 1; z <= 10; z++) {
+          if (x != 1 && x != 10 && z != 1 && z != 10) {
+            continue;
+          }
+          BlockState state = helper.getBlockState(new BlockPos(x, y, z));
+          if (!state.isAir() && !state.is(QuarryRegistry.QUARRY_FRAME)) {
+            sb.append(' ').append(x).append(',').append(y).append(',').append(z).append('=')
+                .append(state.getBlock().getName().getString());
+          }
+        }
+      }
+    }
+    return sb.toString();
+  }
+
+  private static BlockPlaceContext placeContext(GameTestHelper helper, Player player, BlockPos target) {
+    BlockPos floor = target.below();
+    BlockHitResult hit = new BlockHitResult(Vec3.atBottomCenterOf(target), Direction.UP, floor, false);
+    return new BlockPlaceContext(helper.getLevel(), player, InteractionHand.MAIN_HAND,
+        new ItemStack(QuarryRegistry.QUARRY), hit);
+  }
+
+  private static final class MessagePlayer extends Player {
+
+    final List<Component> messages = new ArrayList<>();
+
+    MessagePlayer(Level level, BlockPos pos) {
+      super(level, pos, 0.0F, new GameProfile(UUID.randomUUID(), "faktocraft-placer"));
+    }
+
+    @Override
+    public void displayClientMessage(Component message, boolean overlay) {
+      messages.add(message);
+    }
+
+    @Override
+    public boolean isSpectator() {
+      return false;
+    }
+
+    @Override
+    public boolean isCreative() {
+      return false;
+    }
   }
 }

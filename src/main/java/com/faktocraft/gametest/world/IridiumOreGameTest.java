@@ -8,6 +8,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
@@ -20,14 +21,25 @@ public class IridiumOreGameTest {
 
   private static void check(GameTestHelper helper, Block ore) {
     BlockPos orePos = helper.absolutePos(ORE);
-    int baseline = helper.getLevel().getBrightness(LightLayer.BLOCK, orePos.east());
+    BlockPos lit = ORE.east();
+    for (int x = 0; x <= 4; x++) {
+      for (int y = 0; y <= 3; y++) {
+        for (int z = 0; z <= 4; z++) {
+          BlockPos pos = new BlockPos(x, y, z);
+          if (!pos.equals(ORE) && !pos.equals(lit)) {
+            helper.setBlock(pos, Blocks.STONE.defaultBlockState());
+          }
+        }
+      }
+    }
+    helper.setBlock(lit, Blocks.AIR.defaultBlockState());
     helper.setBlock(ORE, ore.defaultBlockState());
     int emission = ore.defaultBlockState().getLightEmission(helper.getLevel(), orePos);
     if (emission != BlockIridiumOre.LIGHT_LEVEL) {
       helper.fail(ore + " emits " + emission + ", expected " + BlockIridiumOre.LIGHT_LEVEL);
       return;
     }
-    int expected = Math.max(baseline, BlockIridiumOre.LIGHT_LEVEL - 1);
+    int expected = BlockIridiumOre.LIGHT_LEVEL - 1;
     helper.runAfterDelay(5, () -> {
       int beside = helper.getLevel().getBrightness(LightLayer.BLOCK, orePos.east());
       if (beside != expected) {

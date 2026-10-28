@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -156,6 +157,10 @@ public abstract class BlockEntityGantry extends FaktocraftBlockEntity implements
   public double clientHeadZ;
   public double clientHeadLastTime = Double.NaN;
   public float clientRailY = Float.NaN;
+  public double clientSyncedX = Double.NaN;
+  public double clientSyncedY = Double.NaN;
+  public double clientSyncedZ = Double.NaN;
+  public long clientSyncTick;
 
   private List<BlockPos> framePositions;
 
@@ -188,7 +193,7 @@ public abstract class BlockEntityGantry extends FaktocraftBlockEntity implements
   protected abstract int configMaxDrawPerTick();
 
   protected boolean clearsInterior() {
-    return true;
+    return false;
   }
 
   protected IItemHandler externalItemHandler() {
@@ -463,6 +468,31 @@ public abstract class BlockEntityGantry extends FaktocraftBlockEntity implements
     return false;
   }
 
+  @Nullable
+  public static BlockPos findRingObstruction(BlockGetter level, BlockPos host, int[] rect, int frameHeight) {
+    BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+    for (int y = host.getY(); y <= host.getY() + frameHeight; y++) {
+      for (int x = rect[0]; x <= rect[1]; x++) {
+        for (int z = rect[2]; z <= rect[3]; z++) {
+          if (x != rect[0] && x != rect[1] && z != rect[2] && z != rect[3]) {
+            continue;
+          }
+          cursor.set(x, y, z);
+          if (cursor.equals(host)) {
+            continue;
+          }
+          BlockState state = level.getBlockState(cursor);
+          if (state.isAir() || state.canBeReplaced() || state.is(QuarryRegistry.LANDMARK)
+              || (!state.getFluidState().isEmpty() && state.getBlock() instanceof LiquidBlock)) {
+            continue;
+          }
+          return cursor.immutable();
+        }
+      }
+    }
+    return null;
+  }
+
   private void popLandmarks(ServerLevel serverLevel) {
     int y = worldPosition.getY();
     BlockPos[] corners = {
@@ -663,8 +693,11 @@ public abstract class BlockEntityGantry extends FaktocraftBlockEntity implements
 
   protected int breakAt(ServerLevel serverLevel, BlockPos pos, BlockState state, int workingStatus,
       Runnable advance, ItemStack tool) {
-    return breakAt(serverLevel, pos, state, workingStatus, state.canBeReplaced() ? 0 : energyPerBlock(), advance,
-        tool);
+    return breakAt(serverLevel, pos, state, workingStatus, breakCost(serverLevel, pos, state), advance, tool);
+  }
+
+  protected int breakCost(ServerLevel serverLevel, BlockPos pos, BlockState state) {
+    return state.canBeReplaced() || state.getDestroySpeed(serverLevel, pos) == 0.0F ? 0 : energyPerBlock();
   }
 
   protected int breakAt(ServerLevel serverLevel, BlockPos pos, BlockState state, int workingStatus, int cost,

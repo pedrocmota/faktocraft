@@ -166,10 +166,7 @@ public class BlockEntityIronFurnace extends FaktocraftBlockEntity implements IEx
   @Override
   public boolean isItemValidForSlot(int slot, ItemStack stack) {
     if (slot == INPUT_SLOT) {
-      if (level instanceof ServerLevel serverLevel) {
-        return quickCheck.getRecipeFor(MachineRecipeInput.of(stack), serverLevel).isPresent();
-      }
-      return true;
+      return level != null && quickCheck.getRecipeFor(MachineRecipeInput.of(stack), level).isPresent();
     }
     if (slot == FUEL_SLOT) {
       return level != null && ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0;

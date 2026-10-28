@@ -277,6 +277,14 @@ public class BlockEntityCraftPipe extends BlockEntityDockingPipe {
     return pattern.cachedRecipe;
   }
 
+  public ItemStack patternResult(int recipe) {
+    CraftingRecipe craftingRecipe = patternRecipe(recipe);
+    if (craftingRecipe == null || level == null) {
+      return ItemStack.EMPTY;
+    }
+    return craftingRecipe.assemble(new PatternView(recipes.get(recipe).slots), level.registryAccess());
+  }
+
   public List<LogisticsPlanner.ItemChoice> patternIngredients(int recipe) {
     if (recipe < 0 || recipe >= recipes.size()) {
       return List.of();

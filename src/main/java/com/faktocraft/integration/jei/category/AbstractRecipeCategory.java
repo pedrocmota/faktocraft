@@ -1,7 +1,9 @@
 package com.faktocraft.integration.jei.category;
 
 import com.faktocraft.Faktocraft;
+import com.faktocraft.common.block.impl.logistics.RecipeImport;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -43,6 +45,10 @@ public abstract class AbstractRecipeCategory<T> extends mezz.jei.api.recipe.cate
 
   protected IDrawableAnimated createEnergyDrawable() {
     return guiHelper.drawableBuilder(JEI, 249, 0, 7, 37).buildAnimated(200, IDrawableAnimated.StartDirection.TOP, true);
+  }
+
+  protected static IRecipeSlotBuilder markChance(IRecipeSlotBuilder slot, boolean chance) {
+    return chance ? slot.setSlotName(RecipeImport.CHANCE_SLOT) : slot;
   }
 
   protected static List<ItemStack> stacks(Ingredient ingredient, int count) {

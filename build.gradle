@@ -49,6 +49,7 @@ minecraft {
             property 'faktocraft.energyAudit', (project.findProperty('energyAudit') ?: 'false')
             property 'faktocraft.testFilter', (project.findProperty('tests') ?: '')
             property 'faktocraft.legacyFixture', (project.findProperty('legacyFixture') ?: '')
+            property 'faktocraft.paritySnapshot', (project.findProperty('paritySnapshot') ?: '')
         }
 
         data {

@@ -155,10 +155,7 @@ public class BlockEntityElectricFurnace extends FaktocraftBlockEntity
   @Override
   public boolean isItemValidForSlot(int slot, ItemStack stack) {
     if (slot == INPUT_SLOT) {
-      if (level instanceof ServerLevel serverLevel) {
-        return quickCheck.getRecipeFor(MachineRecipeInput.of(stack), serverLevel).isPresent();
-      }
-      return true;
+      return level != null && quickCheck.getRecipeFor(MachineRecipeInput.of(stack), level).isPresent();
     }
     return false;
   }

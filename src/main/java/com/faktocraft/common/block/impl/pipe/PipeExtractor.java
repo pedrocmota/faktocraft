@@ -112,11 +112,6 @@ public class PipeExtractor {
     return dock;
   }
 
-  public static boolean isOverclocker(ItemStack stack) {
-    return stack.getItem() instanceof IUpgradeItem upgrade
-        && upgrade.getUpgradeType() == UpgradeType.OVERCLOCKER;
-  }
-
   public static boolean isMotorUpgrade(ItemStack stack) {
     return stack.getItem() instanceof IUpgradeItem upgrade
         && (upgrade.getUpgradeType() == UpgradeType.OVERCLOCKER

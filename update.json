@@ -1,0 +1,12 @@
+{
+  "homepage": "https://www.curseforge.com/minecraft/mc-mods/faktocraft",
+  "promos": {
+    "1.20.1-latest": "1.0.2",
+    "1.20.1-recommended": "1.0.2"
+  },
+  "1.20.1": {
+    "1.0.2": "Update notifications in chat (client toggle). Quarry and forester refuse placement when anything sits where the frame goes; the quarry builds its frame first and mines the inside from the top, and flowers cost no energy. Landmarks only pair with their mutual nearest partner, so neighbouring sets cannot be mixed up. Smoother gantry head animation. Machine input slots reject invalid items on the client. Pump accepts efficiency upgrades. Shared assembly tables craft only the claimed recipe. Request table result slot crafts on every quick click, like the crafting table. JEI/REI recipe pipe import merges inputs, infers tags, keeps returned items stocked, skips chance results and batches brewing recipes.",
+    "1.0.1": "Faster base quarry, extractor consumes treetaps, instant acid damage, iridium ore light, fix far-from-spawn quarry.",
+    "1.0.0": "First stable release."
+  }
+}

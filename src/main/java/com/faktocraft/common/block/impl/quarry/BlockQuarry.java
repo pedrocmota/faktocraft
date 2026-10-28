@@ -44,18 +44,24 @@ public class BlockQuarry extends FaktocraftEntityBlock implements IStateFacing, 
     Level level = context.getLevel();
     BlockPos pos = context.getClickedPos();
     int[] rect = BlockLandmark.rectAround(level, pos);
-    String problem = null;
+    Component problem = null;
     if (rect == null) {
-      problem = "chat.faktocraft.quarry_needs_landmarks";
+      problem = Component.translatable("chat.faktocraft.quarry_needs_landmarks");
     } else if (!BlockLandmark.rectFits(rect, pos)) {
-      problem = "chat.faktocraft.quarry_area_invalid";
+      problem = Component.translatable("chat.faktocraft.quarry_area_invalid");
+    } else {
+      BlockPos blocker = BlockEntityGantry.findRingObstruction(level, pos, rect, BlockEntityGantry.FRAME_HEIGHT_ABOVE);
+      if (blocker != null) {
+        problem = Component.translatable("chat.faktocraft.frame_obstructed",
+            level.getBlockState(blocker).getBlock().getName(), blocker.getX(), blocker.getY(), blocker.getZ());
+      }
     }
     if (problem == null) {
       return state;
     }
     Player player = context.getPlayer();
     if (player != null && !level.isClientSide()) {
-      player.displayClientMessage(Component.translatable(problem).withStyle(ChatFormatting.RED), true);
+      player.displayClientMessage(problem.copy().withStyle(ChatFormatting.RED), true);
     }
     return null;
   }

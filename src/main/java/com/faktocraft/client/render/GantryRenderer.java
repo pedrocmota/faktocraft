@@ -2,6 +2,7 @@ package com.faktocraft.client.render;
 
 import com.faktocraft.Faktocraft;
 import com.faktocraft.common.block.impl.quarry.BlockEntityGantry;
+import com.faktocraft.common.block.impl.quarry.GantryHeadMotion;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -27,8 +28,6 @@ public class GantryRenderer<T extends BlockEntityGantry> implements BlockEntityR
       "block/misc/quarry_carriage");
   private static final ResourceLocation WHEEL_SPRITE = new ResourceLocation(Faktocraft.MODID,
       "block/misc/quarry_wheel");
-  private static final float CATCH_UP_BOOST = 0.5F;
-  private static final float RESYNC_DISTANCE = 1.0F;
   private static final float BEAM_HALF = 0.125F;
   private static final int WHITE = 0xFFFFFFFF;
   private static final int HEAD_TINT = 0xFF9A9A9A;
@@ -61,13 +60,25 @@ public class GantryRenderer<T extends BlockEntityGantry> implements BlockEntityR
     }
 
     double now = level.getGameTime() + partialTick;
-    if (Double.isNaN(quarry.clientHeadLastTime) || farFromSynced(quarry)) {
-      quarry.clientHeadX = quarry.headX;
-      quarry.clientHeadY = quarry.headY;
-      quarry.clientHeadZ = quarry.headZ;
+    if (quarry.headX != quarry.clientSyncedX || quarry.headY != quarry.clientSyncedY
+        || quarry.headZ != quarry.clientSyncedZ) {
+      quarry.clientSyncedX = quarry.headX;
+      quarry.clientSyncedY = quarry.headY;
+      quarry.clientSyncedZ = quarry.headZ;
+      quarry.clientSyncTick = level.getGameTime();
+    }
+    double[] predicted = predictedHead(quarry, now);
+    if (Double.isNaN(quarry.clientHeadLastTime)) {
+      quarry.clientHeadX = predicted[0];
+      quarry.clientHeadY = predicted[1];
+      quarry.clientHeadZ = predicted[2];
     } else {
-      float elapsed = Math.min(3.0F, Math.max(0.0F, (float) (now - quarry.clientHeadLastTime)));
-      followGoal(quarry, elapsed);
+      double elapsed = Math.min(3.0, Math.max(0.0, now - quarry.clientHeadLastTime));
+      double[] current = { quarry.clientHeadX, quarry.clientHeadY, quarry.clientHeadZ };
+      GantryHeadMotion.follow(current, predicted, quarry.armSpeed(), elapsed);
+      quarry.clientHeadX = current[0];
+      quarry.clientHeadY = current[1];
+      quarry.clientHeadZ = current[2];
     }
     float railTarget = quarry.frameHeightAbove();
     if (Float.isNaN(quarry.clientRailY) || Double.isNaN(quarry.clientHeadLastTime)) {
@@ -377,36 +388,15 @@ public class GantryRenderer<T extends BlockEntityGantry> implements BlockEntityR
     CuboidRenderer.vertex(pose, vc, x1, y0, z0, uz0, vyBottom, color, light, 1, 0, 0);
   }
 
-  private static boolean farFromSynced(BlockEntityGantry quarry) {
-    double dx = quarry.headX - quarry.clientHeadX;
-    double dy = quarry.headY - quarry.clientHeadY;
-    double dz = quarry.headZ - quarry.clientHeadZ;
-    return dx * dx + dy * dy + dz * dz > RESYNC_DISTANCE * RESYNC_DISTANCE;
-  }
-
-  private static void followGoal(BlockEntityGantry quarry, float elapsed) {
+  private static double[] predictedHead(BlockEntityGantry quarry, double now) {
+    double[] synced = { quarry.clientSyncedX, quarry.clientSyncedY, quarry.clientSyncedZ };
     double[] goal = new double[3];
     if (!quarry.headGoal(goal)) {
-      return;
+      return synced;
     }
-    double dx = goal[0] - quarry.clientHeadX;
-    double dy = goal[1] - quarry.clientHeadY;
-    double dz = goal[2] - quarry.clientHeadZ;
-    double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-    double sx = quarry.headX - quarry.clientHeadX;
-    double sy = quarry.headY - quarry.clientHeadY;
-    double sz = quarry.headZ - quarry.clientHeadZ;
-    double behind = Math.sqrt(sx * sx + sy * sy + sz * sz);
-    double step = quarry.armSpeed() * elapsed * (1.0 + CATCH_UP_BOOST * Math.min(1.0, behind));
-    if (distance <= step) {
-      quarry.clientHeadX = goal[0];
-      quarry.clientHeadY = goal[1];
-      quarry.clientHeadZ = goal[2];
-    } else {
-      quarry.clientHeadX += dx / distance * step;
-      quarry.clientHeadY += dy / distance * step;
-      quarry.clientHeadZ += dz / distance * step;
-    }
+    double[] out = new double[3];
+    GantryHeadMotion.predict(synced, goal, quarry.armSpeed(), now - quarry.clientSyncTick, out);
+    return out;
   }
 
   @Override

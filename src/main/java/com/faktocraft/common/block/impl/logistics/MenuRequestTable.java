@@ -268,6 +268,11 @@ public class MenuRequestTable extends AbstractContainerMenu {
   }
 
   @Override
+  public boolean canTakeItemForPickAll(ItemStack carried, Slot target) {
+    return target.container != result && super.canTakeItemForPickAll(carried, target);
+  }
+
+  @Override
   public ItemStack quickMoveStack(Player player, int index) {
     Slot slot = this.slots.get(index);
     if (!slot.hasItem() || index == GHOST_INDEX) {

@@ -7,6 +7,7 @@ modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/faktocraft"
+updateJSONURL="https://raw.githubusercontent.com/pedrocmota/faktocraft-forge/1.20.1/update.json"
 logoFile="assets/faktocraft/icon.png"
 authors="${mod_authors}"
 description='''${mod_description}'''

@@ -2,9 +2,7 @@
 
 <img src="docs/banners/main.webp" alt="Faktocraft" width="700">
 
-Faktocraft is a modern port of several classic tech mods - **IndustrialCraft 2**, **BuildCraft** and **Logistics Pipes** - brought together into a single mod: electrical machines, tiered power grids, item and fluid pipes, automated mining and a request-based logistics system.
-
-> ℹ️ The mod is in **beta**. The feature set is complete and every system has been played through, but balance is still being tuned and bugs may remain.
+Faktocraft is a modern sucessor of several classic tech mods - **IndustrialCraft 2**, **BuildCraft** and **Logistics Pipes** - brought together into a single mod: electrical machines, tiered power grids, item and fluid pipes, automated mining and a request-based logistics system.
 
 ## Features
 
@@ -43,11 +41,6 @@ Faktocraft is a modern port of several classic tech mods - **IndustrialCraft 2**
 - Jetpacks, nano and quantum armor, electric tools, night vision goggles.
 - Status Monitor wall panel that shows live information about any block, Teleport Anchors (including a dimensional one), Chunk Loader, Luminator, reinforced stone and glass.
 
-## Requirements
-
-- **Minecraft 1.20.1 with Forge** - this is the only supported version.
-- The mod will be updated to newer Minecraft versions once Minecraft stabilizes its Vulkan support in the future.
-
 ## Compatibility
 
 Faktocraft has no mixins, coremods or access transformers, so it rarely conflicts with other mods.
@@ -75,10 +68,6 @@ Faktocraft has no mixins, coremods or access transformers, so it rarely conflict
 ### Incompatible
 
 - **Folia** and other region-threaded servers - the energy networks, the logistics engine and the block entities assume a single server thread per world.
-
-## Fabric?
-
-A Fabric port is unlikely - the mod is deeply tied to Forge internals (energy capabilities, registries, networking), which makes porting it very difficult.
 
 ## Wiki
 

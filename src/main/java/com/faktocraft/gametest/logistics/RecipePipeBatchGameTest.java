@@ -40,17 +40,17 @@ public class RecipePipeBatchGameTest {
   private static final String BREWING_STAND_ID = "minecraft:brewing_stand";
   private static final int BREWING_SLOTS = 5;
 
-  private static final BlockPos STOCK = new BlockPos(1, 1, 1);
+  static final BlockPos STOCK = new BlockPos(1, 1, 1);
   private static final BlockPos CORE = new BlockPos(3, 2, 1);
-  private static final BlockPos TABLE = new BlockPos(5, 1, 1);
-  private static final BlockPos PIPE = new BlockPos(4, 1, 2);
-  private static final BlockPos MACHINE = new BlockPos(4, 1, 3);
+  static final BlockPos TABLE = new BlockPos(5, 1, 1);
+  static final BlockPos PIPE = new BlockPos(4, 1, 2);
+  static final BlockPos MACHINE = new BlockPos(4, 1, 3);
 
-  private static ItemStack waterBottle() {
+  static ItemStack waterBottle() {
     return PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
   }
 
-  private static ItemStack awkwardPotion() {
+  static ItemStack awkwardPotion() {
     return PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD);
   }
 
@@ -82,7 +82,7 @@ public class RecipePipeBatchGameTest {
     }
   }
 
-  private static int countInChest(GameTestHelper helper, BlockPos rel, java.util.function.Predicate<ItemStack> what) {
+  static int countInChest(GameTestHelper helper, BlockPos rel, java.util.function.Predicate<ItemStack> what) {
     if (!(helper.getBlockEntity(rel) instanceof ChestBlockEntity chest)) {
       return -1;
     }
@@ -96,7 +96,7 @@ public class RecipePipeBatchGameTest {
     return count;
   }
 
-  private static int countIn(Container container, java.util.function.Predicate<ItemStack> what) {
+  static int countIn(Container container, java.util.function.Predicate<ItemStack> what) {
     int count = 0;
     for (int i = 0; i < container.getContainerSize(); i++) {
       ItemStack stack = container.getItem(i);
@@ -107,7 +107,7 @@ public class RecipePipeBatchGameTest {
     return count;
   }
 
-  private static void buildNetwork(GameTestHelper helper, ItemStack... provided) {
+  static void buildNetwork(GameTestHelper helper, ItemStack... provided) {
     placeChest(helper, STOCK, provided);
     helper.setBlock(new BlockPos(2, 1, 1), LogisticsRegistry.CHASSIS_1.defaultBlockState());
     helper.setBlock(new BlockPos(3, 1, 1), LogisticsRegistry.CHASSIS_1.defaultBlockState());
@@ -119,7 +119,7 @@ public class RecipePipeBatchGameTest {
     helper.setBlock(PIPE, LogisticsRegistry.RECIPE_PIPE.defaultBlockState());
   }
 
-  private static ItemStack[] brewingStock(int bottles, int wart, int blaze) {
+  static ItemStack[] brewingStock(int bottles, int wart, int blaze) {
     ItemStack[] stacks = new ItemStack[bottles + 2];
     for (int i = 0; i < bottles; i++) {
       stacks[i] = waterBottle();
@@ -150,7 +150,7 @@ public class RecipePipeBatchGameTest {
     return true;
   }
 
-  private static void requestPotions(GameTestHelper helper, int quantity) {
+  static void requestPotions(GameTestHelper helper, int quantity) {
     helper.runAfterDelay(20, () -> {
       if (helper.getBlockEntity(TABLE) instanceof BlockEntityRequestTable table) {
         table.setGhostTarget(awkwardPotion());
@@ -161,7 +161,7 @@ public class RecipePipeBatchGameTest {
     });
   }
 
-  private static String ledgerState(GameTestHelper helper) {
+  static String ledgerState(GameTestHelper helper) {
     StringBuilder out = new StringBuilder();
     if (helper.getBlockEntity(MACHINE) instanceof BrewingStandBlockEntity stand) {
       out.append("stand=[");
@@ -188,7 +188,7 @@ public class RecipePipeBatchGameTest {
     return out.toString();
   }
 
-  private static void expectPotions(GameTestHelper helper, int quantity, int wartUsed, int stockBottles,
+  static void expectPotions(GameTestHelper helper, int quantity, int wartUsed, int stockBottles,
       int stockWart) {
     helper.succeedWhen(() -> {
       if (!(helper.getBlockEntity(TABLE) instanceof BlockEntityRequestTable table)) {

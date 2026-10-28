@@ -100,12 +100,28 @@ public class MachineDisplay extends BasicDisplay {
 
   private final CategoryIdentifier<MachineDisplay> category;
   private final Info info;
+  private final List<Float> outputChances;
 
   public MachineDisplay(CategoryIdentifier<MachineDisplay> category, List<EntryIngredient> inputs,
       List<EntryIngredient> outputs, Optional<ResourceLocation> location, Info info) {
+    this(category, inputs, outputs, location, info, List.of());
+  }
+
+  public MachineDisplay(CategoryIdentifier<MachineDisplay> category, List<EntryIngredient> inputs,
+      List<EntryIngredient> outputs, Optional<ResourceLocation> location, Info info, List<Float> outputChances) {
     super(inputs, outputs, location);
     this.category = category;
     this.info = info == null ? Info.EMPTY : info;
+    this.outputChances = List.copyOf(outputChances);
+  }
+
+  public boolean chanceOutput(int index) {
+    float chance = index < outputChances.size() ? outputChances.get(index) : 0.0F;
+    if (chance > 0.0F) {
+      return chance < (category.equals(ReiCategories.RECYCLING) ? 1.0F : 100.0F);
+    }
+    return category.equals(ReiCategories.SCRAP_BOX)
+        || (category.equals(ReiCategories.DISTILLING) && index > 0 && info.chance() < 1.0F);
   }
 
   @Override

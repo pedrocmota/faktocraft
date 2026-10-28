@@ -172,9 +172,12 @@ public class LogisticsChainGameTest {
 
   static void pattern(GameTestHelper helper, int station, ItemStack... cells) {
     BlockEntityCraftPipe pipe = benchStation(helper, station);
-    if (pipe == null) {
-      return;
+    if (pipe != null) {
+      addPattern(pipe, cells);
     }
+  }
+
+  static void addPattern(BlockEntityCraftPipe pipe, ItemStack... cells) {
     int recipe = pipe.addRecipe();
     for (int i = 0; i < cells.length; i++) {
       if (cells[i] != null && !cells[i].isEmpty()) {
@@ -929,5 +932,96 @@ public class LogisticsChainGameTest {
         helper.fail("all 64 logs should have been used");
       }
     });
+  }
+
+  static void sameBenchChestChain(GameTestHelper helper, int chests, boolean chestFirst) {
+    buildBus(helper, new ItemStack(Items.OAK_LOG, 64));
+    BlockEntityCraftPipe pipe = benchStation(helper, 0);
+    if (pipe == null) {
+      return;
+    }
+    ItemStack planks = new ItemStack(Items.OAK_PLANKS);
+    ItemStack[] chest = { planks, planks, planks, planks, null, planks, planks, planks, planks };
+    if (chestFirst) {
+      addPattern(pipe, chest);
+    }
+    addPattern(pipe, new ItemStack(Items.OAK_LOG));
+    if (!chestFirst) {
+      addPattern(pipe, chest);
+    }
+    request(helper, new ItemStack(Items.CHEST), chests);
+    expectDelivered(helper, Items.CHEST, chests, 1);
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 1800)
+  public void sameBenchChainMakesOneChest(GameTestHelper helper) {
+    sameBenchChestChain(helper, 1, false);
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 1800)
+  public void sameBenchChainMakesTwoChests(GameTestHelper helper) {
+    sameBenchChestChain(helper, 2, false);
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 1800)
+  public void sameBenchChainMakesThreeChestsWithTheChestRecipeFirst(GameTestHelper helper) {
+    sameBenchChestChain(helper, 3, true);
+  }
+
+  static void expectOnly(GameTestHelper helper, Item target, int quantity, Item stray) {
+    helper.succeedWhen(() -> {
+      int delivered = countInTable(helper, stack -> stack.is(target));
+      int strays = countInChest(helper, STOCK, stack -> stack.is(stray))
+          + countInTable(helper, stack -> stack.is(stray));
+      if (helper.getBlockEntity(machineAt(0)) instanceof BlockEntityAssemblyTable table) {
+        for (int slot = 0; slot < table.getOutput().getSlots(); slot++) {
+          if (table.getOutput().getStackInSlot(slot).is(stray)) {
+            strays += table.getOutput().getStackInSlot(slot).getCount();
+          }
+        }
+      }
+      if (strays > 0) {
+        helper.fail("the bench crafted " + strays + " " + stray + " from ingredients sent for " + target + "; "
+            + ledgerState(helper));
+        return;
+      }
+      if (delivered != quantity || historyCount(helper, "done") != 1 || activeJobs(helper) != 0) {
+        helper.fail("expected " + quantity + " " + target + " at the table, found " + delivered + "; "
+            + ledgerState(helper));
+      }
+    });
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 1800)
+  public void sharedBenchCraftsOnlyTheRequestedRecipe(GameTestHelper helper) {
+    ItemStack tin = new ItemStack(ModItems.TIN_PLATE);
+    ItemStack rubber = new ItemStack(ModItems.RUBBER);
+    ItemStack lithium = new ItemStack(ModItems.LITHIUM_DUST);
+    ItemStack redstone = new ItemStack(Items.REDSTONE);
+    buildBus(helper, tin.copyWithCount(16), rubber.copyWithCount(16), lithium.copyWithCount(16),
+        redstone.copyWithCount(16));
+    BlockEntityCraftPipe pipe = benchStation(helper, 0);
+    if (pipe == null) {
+      return;
+    }
+    addPattern(pipe, null, null, null, tin, rubber, tin, rubber, redstone, rubber);
+    addPattern(pipe, tin, rubber, tin, lithium, redstone, lithium, tin, rubber, tin);
+    request(helper, new ItemStack(ModItems.BASIC_CAPACITOR), 2);
+    expectOnly(helper, ModItems.BASIC_CAPACITOR, 2, ModItems.CRUDE_CAPACITOR);
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 1800)
+  public void sharedBenchChainIgnoresTheStickRecipe(GameTestHelper helper) {
+    buildBus(helper, new ItemStack(Items.OAK_LOG, 64));
+    BlockEntityCraftPipe pipe = benchStation(helper, 0);
+    if (pipe == null) {
+      return;
+    }
+    ItemStack planks = new ItemStack(Items.OAK_PLANKS);
+    addPattern(pipe, null, null, null, planks, null, null, planks);
+    addPattern(pipe, new ItemStack(Items.OAK_LOG));
+    addPattern(pipe, planks, planks, planks, planks, null, planks, planks, planks, planks);
+    request(helper, new ItemStack(Items.CHEST), 2);
+    expectOnly(helper, Items.CHEST, 2, Items.STICK);
   }
 }

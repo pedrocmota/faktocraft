@@ -23,7 +23,8 @@ public class BlockEntityRecipePipe extends BlockEntityDockingPipe {
   public static final int MIN_OUTPUTS = 1;
   public static final int MAX_BATCH = 64;
 
-  private static final int MAX_TAG_ITEMS = 64;
+  public static final int MAX_COUNT = 6400;
+  public static final int MAX_TAG_ITEMS = 64;
 
   private boolean shared = true;
 
@@ -330,16 +331,51 @@ public class BlockEntityRecipePipe extends BlockEntityDockingPipe {
     MachineRecipe entry = recipe(recipe);
     Io io = entry != null ? entry.io(ioId) : null;
     if (io != null && !stack.isEmpty()) {
-      io.count = Math.max(1, Math.min(6400, count));
+      io.count = Math.max(1, Math.min(MAX_COUNT, count));
       changed();
     }
+  }
+
+  public void importRecipe(int recipe, List<RecipeImport.Entry> inputs, List<RecipeImport.Entry> outputs,
+      int batchSize) {
+    MachineRecipe entry = recipe(recipe);
+    if (entry == null) {
+      return;
+    }
+    for (int i = 0; i < MAX_INPUTS; i++) {
+      importIo(entry.inputs[i], i < inputs.size() ? inputs.get(i) : null, true);
+    }
+    for (int i = 0; i < MAX_OUTPUTS; i++) {
+      importIo(entry.outputs[i], i < outputs.size() ? outputs.get(i) : null, false);
+    }
+    entry.batchSize = Math.max(1, Math.min(MAX_BATCH, batchSize));
+    changed();
+  }
+
+  private static void importIo(Io io, @Nullable RecipeImport.Entry imported, boolean input) {
+    if (imported == null || imported.stack().isEmpty()) {
+      io.clear();
+      return;
+    }
+    if (io.isEmpty() || !ItemKey.of(io.stack).equals(ItemKey.of(imported.stack()))) {
+      io.clearBinding();
+    }
+    io.stack = imported.stack().copyWithCount(1);
+    io.count = Math.max(1, Math.min(MAX_COUNT, imported.count()));
+    io.tag = input && validTag(io.stack, imported.tag()) ? imported.tag() : "";
+    io.mode = input ? imported.mode() : IoMode.PER_UNIT;
+  }
+
+  private static boolean validTag(ItemStack stack, String tag) {
+    ResourceLocation id = tag.isEmpty() ? null : ResourceLocation.tryParse(tag);
+    return id != null && stack.is(TagKey.create(Registries.ITEM, id));
   }
 
   public void adjustCount(int recipe, int ioId, int delta) {
     MachineRecipe entry = recipe(recipe);
     Io io = entry != null ? entry.io(ioId) : null;
     if (io != null && !io.isEmpty()) {
-      io.count = Math.max(1, Math.min(6400, io.count + delta));
+      io.count = Math.max(1, Math.min(MAX_COUNT, io.count + delta));
       changed();
     }
   }

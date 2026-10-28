@@ -85,10 +85,15 @@ public final class ReiDisplays {
       Ingredient ingredient, int count, ItemStack result, Optional<ChanceResult> bonus, int duration, int power,
       float experience) {
     List<EntryIngredient> outputs = new ArrayList<>();
+    List<Float> chances = new ArrayList<>();
     outputs.add(item(result));
-    bonus.ifPresent(chanceResult -> outputs.add(chance(chanceResult.stack(), chanceResult.chance())));
+    chances.add(0.0F);
+    bonus.ifPresent(chanceResult -> {
+      outputs.add(chance(chanceResult.stack(), chanceResult.chance()));
+      chances.add(chanceResult.chance());
+    });
     return new MachineDisplay(category, List.of(items(ingredient, count)), outputs, location(recipe),
-        MachineDisplay.Info.of(duration, power, experience));
+        MachineDisplay.Info.of(duration, power, experience), chances);
   }
 
   public static MachineDisplay crushing(CrushingRecipe recipe) {
@@ -151,7 +156,7 @@ public final class ReiDisplays {
             .toList();
     return new MachineDisplay(ReiCategories.RECYCLING, List.of(EntryIngredients.ofItemStacks(inputs)),
         List.of(chance(recipe.getResultItem(), recipe.getChance())), location(recipe),
-        MachineDisplay.Info.of(recipe.getDuration(), recipe.getPowerCost(), 0.0F));
+        MachineDisplay.Info.of(recipe.getDuration(), recipe.getPowerCost(), 0.0F), List.of(recipe.getChance()));
   }
 
   public static MachineDisplay fluidEnriching(FluidEnrichingRecipe recipe) {

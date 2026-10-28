@@ -5,6 +5,7 @@ import com.faktocraft.common.block.impl.forester.BlockEntityForester;
 import com.faktocraft.common.block.impl.forester.ForesterRegistry;
 import com.faktocraft.common.block.impl.quarry.BlockEntityGantry;
 import com.faktocraft.common.block.impl.quarry.BlockEntityQuarry;
+import com.faktocraft.common.block.impl.quarry.GantryHeadMotion;
 import com.faktocraft.common.block.impl.quarry.QuarryRegistry;
 import com.faktocraft.common.config.ModConfig;
 import com.faktocraft.common.registries.ModItems;
@@ -94,6 +95,32 @@ public class GantrySpeedGameTest {
         || !check(helper, "forester max arm speed", forester.armSpeed(), legacyArm(8))) {
       return;
     }
+    helper.succeed();
+  }
+
+  @GameTest(template = TEMPLATE, timeoutTicks = 20)
+  public static void headPredictionNeverStepsBackwards(GameTestHelper helper) {
+    double speed = 0.5;
+    double[] goal = { 10.5, 7.0, 0.5 };
+    double[] synced = { 0.5, 7.0, 0.5 };
+    double[] client = { 0.5, 7.0, 0.5 };
+    double[] predicted = new double[3];
+    double lastX = client[0];
+    for (int tick = 1; tick <= 40; tick++) {
+      int syncTick = tick - tick % 5;
+      synced[0] = Math.min(goal[0], 0.5 + speed * syncTick);
+      for (int frame = 0; frame < 4; frame++) {
+        double now = tick + frame * 0.25;
+        GantryHeadMotion.predict(synced, goal, speed, now - syncTick, predicted);
+        GantryHeadMotion.follow(client, predicted, speed, 0.25);
+        helper.assertTrue(client[0] + 1.0E-6 >= lastX, "head moved backwards at tick " + now
+            + ": " + lastX + " -> " + client[0]);
+        helper.assertTrue(Math.abs(client[0] - Math.min(goal[0], 0.5 + speed * now)) < 0.75,
+            "head drifted from the server path at tick " + now + ": " + client[0]);
+        lastX = client[0];
+      }
+    }
+    helper.assertTrue(Math.abs(client[0] - goal[0]) < 1.0E-6, "head did not settle on the goal: " + client[0]);
     helper.succeed();
   }
 }

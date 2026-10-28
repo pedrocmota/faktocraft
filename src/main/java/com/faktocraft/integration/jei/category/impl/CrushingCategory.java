@@ -57,7 +57,8 @@ public class CrushingCategory extends AbstractRecipeCategory<CrushingRecipe> {
     Optional<ChanceResult> bonus = recipe.getBonusResult().firstResult();
     if (bonus.isPresent()) {
       ChanceResult chanceResult = bonus.get();
-      builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 29).addItemStack(chanceResult.stack())
+      markChance(builder.addSlot(RecipeIngredientRole.OUTPUT, halfX + 8, 29).addItemStack(chanceResult.stack()),
+          chanceResult.chance() < 100.0F)
           .addRichTooltipCallback((view, tooltip) -> tooltip.add(
               Component.translatable(EnumLang.CHANCE.getTranslationKey(),
                   Component.literal((Math.round(chanceResult.chance() * 100.0) / 100.0) + "%")
