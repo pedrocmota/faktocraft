@@ -8,6 +8,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 
 public class BaseScreen<T extends FaktocraftMenu> extends AbstractContainerScreen<T> implements IGuiWrapper {
 
@@ -45,6 +47,17 @@ public class BaseScreen<T extends FaktocraftMenu> extends AbstractContainerScree
   @Override
   public ResourceLocation getGuiLocation() {
     return null;
+  }
+
+  @Override
+  protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    FaktocraftBlockEntity blockEntity = getBlockEntity();
+    if (TensionRemovalGuard.confirm(this, slot, mouseButton, type,
+        blockEntity == null ? null : blockEntity.getEnergyStorage(),
+        () -> super.slotClicked(slot, slotId, mouseButton, type))) {
+      return;
+    }
+    super.slotClicked(slot, slotId, mouseButton, type);
   }
 
   @Override

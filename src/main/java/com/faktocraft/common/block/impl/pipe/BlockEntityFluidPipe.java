@@ -19,11 +19,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockEntityFluidPipe extends BlockEntity
-    implements IValveHolder, ISupportHost, com.faktocraft.common.cover.ICoverHost {
+    implements IValveHolder, ISupportHost, com.faktocraft.common.cover.ICoverHost,
+    com.faktocraft.common.block.IConnectionExtensionHost {
 
   @org.jetbrains.annotations.Nullable
   private BlockState cover;
   private int coverHoles;
+  private final com.faktocraft.common.block.ConnectionExtensions extensions =
+      new com.faktocraft.common.block.ConnectionExtensions();
+
+  @Override
+  public com.faktocraft.common.block.ConnectionExtensions extensions() {
+    return extensions;
+  }
 
   @org.jetbrains.annotations.Nullable
   @Override
@@ -45,7 +53,7 @@ public class BlockEntityFluidPipe extends BlockEntity
 
   @Override
   public net.minecraftforge.client.model.data.ModelData getModelData() {
-    return com.faktocraft.common.cover.CoverSupport.modelData(cover, coverHoles);
+    return extensions.modelData(com.faktocraft.common.cover.CoverSupport.modelData(cover, coverHoles));
   }
 
   @Override
@@ -53,8 +61,9 @@ public class BlockEntityFluidPipe extends BlockEntity
       net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket packet) {
     BlockState previousCover = cover;
     int previousHoles = coverHoles;
+    int previousExtensions = extensions.mask();
     super.onDataPacket(connection, packet);
-    if (cover != previousCover || coverHoles != previousHoles) {
+    if (cover != previousCover || coverHoles != previousHoles || extensions.mask() != previousExtensions) {
       com.faktocraft.common.cover.CoverSupport.refreshClientModel(this);
     }
   }
@@ -63,6 +72,7 @@ public class BlockEntityFluidPipe extends BlockEntity
   public void onLoad() {
     super.onLoad();
     com.faktocraft.common.cover.CoverSupport.onClientLoad(this, this);
+    extensions.resolve(this);
   }
 
   public final FluidStorage tank;
@@ -199,6 +209,7 @@ public class BlockEntityFluidPipe extends BlockEntity
     if (level == null) {
       return;
     }
+    extensions.resolve(this);
     if (dirtySync && level.getGameTime() % 10 == 0) {
       dirtySync = false;
       level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
@@ -326,6 +337,7 @@ public class BlockEntityFluidPipe extends BlockEntity
     tank.save(tankTag);
     tag.put("tank", tankTag);
     com.faktocraft.common.cover.CoverSupport.save(tag, cover, coverHoles);
+    extensions.save(tag);
   }
 
   @Override
@@ -341,11 +353,13 @@ public class BlockEntityFluidPipe extends BlockEntity
     settledMb = tank.getFluidAmount();
     cover = com.faktocraft.common.cover.CoverSupport.load(tag);
     coverHoles = com.faktocraft.common.cover.CoverSupport.loadHoles(tag);
+    extensions.load(tag);
   }
 
   @Override
   public CompoundTag getUpdateTag() {
     CompoundTag tag = new CompoundTag();
+    extensions.resolve(this);
     saveAdditional(tag);
     return tag;
   }

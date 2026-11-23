@@ -61,18 +61,19 @@ public abstract class AbstractBlockEntityAlloySmelter extends FaktocraftBlockEnt
   }
 
   protected Optional<AlloySmeltingRecipe> getRecipe(ItemStack... input) {
-    if (!(level instanceof ServerLevel serverLevel)) {
+    if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
-    return serverLevel.getRecipeManager().getRecipeFor(ModRecipeType.ALLOY_SMELTING, MachineRecipeInput.of(input),
+    return findRecipe(input);
+  }
+
+  private Optional<AlloySmeltingRecipe> findRecipe(ItemStack... input) {
+    return level.getRecipeManager().getRecipeFor(ModRecipeType.ALLOY_SMELTING, MachineRecipeInput.of(input),
         level);
   }
 
   private boolean isValidInput(final ItemStack... stack) {
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   private boolean canWork(ItemStack inputStack0, ItemStack inputStack1, ItemStack inputStack2, ItemStack outputStack,

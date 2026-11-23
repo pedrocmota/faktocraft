@@ -12,6 +12,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import com.faktocraft.common.screen.TensionRemovalGuard;
 
 public class ScreenExtractorPipe extends AbstractContainerScreen<MenuExtractorPipe>
     implements com.faktocraft.common.interfaces.screen.IGuiWrapper {
@@ -43,6 +46,16 @@ public class ScreenExtractorPipe extends AbstractContainerScreen<MenuExtractorPi
   @Override
   public com.faktocraft.common.entity.block.FaktocraftBlockEntity getBlockEntity() {
     return null;
+  }
+
+  @Override
+  protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    PipeExtractor extractor = menu.getExtractor();
+    if (TensionRemovalGuard.confirm(this, slot, mouseButton, type, extractor == null ? null : extractor.energy(),
+        () -> super.slotClicked(slot, slotId, mouseButton, type))) {
+      return;
+    }
+    super.slotClicked(slot, slotId, mouseButton, type);
   }
 
   @Override

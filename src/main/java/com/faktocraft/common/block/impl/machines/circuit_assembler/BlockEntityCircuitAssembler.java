@@ -76,18 +76,19 @@ public class BlockEntityCircuitAssembler extends FaktocraftBlockEntity
   }
 
   protected Optional<CircuitAssemblingRecipe> getRecipe(ItemStack... input) {
-    if (!(level instanceof ServerLevel serverLevel)) {
+    if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
-    return serverLevel.getRecipeManager().getRecipeFor(ModRecipeType.CIRCUIT_ASSEMBLING, MachineRecipeInput.of(input),
+    return findRecipe(input);
+  }
+
+  private Optional<CircuitAssemblingRecipe> findRecipe(ItemStack... input) {
+    return level.getRecipeManager().getRecipeFor(ModRecipeType.CIRCUIT_ASSEMBLING, MachineRecipeInput.of(input),
         level);
   }
 
   private boolean isValidInput(final ItemStack... stack) {
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   private boolean canWork(ItemStack inputStack0, ItemStack inputStack1, ItemStack inputStack2, ItemStack outputStack,

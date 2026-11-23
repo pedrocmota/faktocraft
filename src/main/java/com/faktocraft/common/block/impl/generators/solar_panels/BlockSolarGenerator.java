@@ -29,39 +29,6 @@ public class BlockSolarGenerator extends BlockElectricMachine implements IHasMen
     }
   }
 
-  private static final java.util.Map<net.minecraft.core.Direction, net.minecraft.world.level.block.state.properties.BooleanProperty> CABLE_ADAPTER_PROPS = java.util.Map
-      .of(
-          net.minecraft.core.Direction.NORTH,
-          net.minecraft.world.level.block.state.properties.BlockStateProperties.NORTH,
-          net.minecraft.core.Direction.EAST,
-          net.minecraft.world.level.block.state.properties.BlockStateProperties.EAST,
-          net.minecraft.core.Direction.SOUTH,
-          net.minecraft.world.level.block.state.properties.BlockStateProperties.SOUTH,
-          net.minecraft.core.Direction.WEST,
-          net.minecraft.world.level.block.state.properties.BlockStateProperties.WEST,
-          net.minecraft.core.Direction.DOWN,
-          net.minecraft.world.level.block.state.properties.BlockStateProperties.DOWN);
-
-  private static final java.util.Map<net.minecraft.core.Direction, net.minecraft.world.level.block.state.properties.BooleanProperty> PANEL_CONNECT_PROPS = java.util.Map
-      .of(
-          net.minecraft.core.Direction.NORTH,
-          net.minecraft.world.level.block.state.properties.BooleanProperty.create("panel_north"),
-          net.minecraft.core.Direction.EAST,
-          net.minecraft.world.level.block.state.properties.BooleanProperty.create("panel_east"),
-          net.minecraft.core.Direction.SOUTH,
-          net.minecraft.world.level.block.state.properties.BooleanProperty.create("panel_south"),
-          net.minecraft.core.Direction.WEST,
-          net.minecraft.world.level.block.state.properties.BooleanProperty.create("panel_west"));
-
-  private static final net.minecraft.world.level.block.state.properties.BooleanProperty CORNER_NE = net.minecraft.world.level.block.state.properties.BooleanProperty
-      .create("corner_ne");
-  private static final net.minecraft.world.level.block.state.properties.BooleanProperty CORNER_SE = net.minecraft.world.level.block.state.properties.BooleanProperty
-      .create("corner_se");
-  private static final net.minecraft.world.level.block.state.properties.BooleanProperty CORNER_SW = net.minecraft.world.level.block.state.properties.BooleanProperty
-      .create("corner_sw");
-  private static final net.minecraft.world.level.block.state.properties.BooleanProperty CORNER_NW = net.minecraft.world.level.block.state.properties.BooleanProperty
-      .create("corner_nw");
-
   private final SolarGeneratorTier solarTier;
   protected final VoxelShape shape;
 
@@ -69,98 +36,23 @@ public class BlockSolarGenerator extends BlockElectricMachine implements IHasMen
     super(tier.getEnergyTier(), properties);
     this.shape = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
     this.solarTier = tier;
-    BlockState base = defaultBlockState();
-    for (var prop : CABLE_ADAPTER_PROPS.values()) {
-      base = base.setValue(prop, false);
-    }
-    for (var prop : PANEL_CONNECT_PROPS.values()) {
-      base = base.setValue(prop, false);
-    }
-    base = base.setValue(CORNER_NE, false).setValue(CORNER_SE, false)
-        .setValue(CORNER_SW, false).setValue(CORNER_NW, false);
-    registerDefaultState(base);
-  }
-
-  private static boolean isPanel(net.minecraft.world.level.LevelAccessor level, BlockPos pos) {
-    return level.getBlockState(pos).getBlock() instanceof BlockSolarGenerator;
-  }
-
-  private static boolean innerCorner(BlockState state, net.minecraft.world.level.LevelAccessor level,
-      BlockPos pos, net.minecraft.core.Direction a, net.minecraft.core.Direction b) {
-    return state.getValue(PANEL_CONNECT_PROPS.get(a)) && state.getValue(PANEL_CONNECT_PROPS.get(b))
-        && !isPanel(level, pos.relative(a).relative(b));
-  }
-
-  private static BlockState updateInnerCorners(BlockState state, net.minecraft.world.level.LevelAccessor level,
-      BlockPos pos) {
-    var north = net.minecraft.core.Direction.NORTH;
-    var south = net.minecraft.core.Direction.SOUTH;
-    var east = net.minecraft.core.Direction.EAST;
-    var west = net.minecraft.core.Direction.WEST;
-    return state
-        .setValue(CORNER_NE, innerCorner(state, level, pos, north, east))
-        .setValue(CORNER_SE, innerCorner(state, level, pos, south, east))
-        .setValue(CORNER_SW, innerCorner(state, level, pos, south, west))
-        .setValue(CORNER_NW, innerCorner(state, level, pos, north, west));
-  }
-
-  @Override
-  protected void createBlockStateDefinition(
-      net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> builder) {
-    super.createBlockStateDefinition(builder);
-    builder.add(net.minecraft.world.level.block.state.properties.BlockStateProperties.NORTH,
-        net.minecraft.world.level.block.state.properties.BlockStateProperties.EAST,
-        net.minecraft.world.level.block.state.properties.BlockStateProperties.SOUTH,
-        net.minecraft.world.level.block.state.properties.BlockStateProperties.WEST,
-        net.minecraft.world.level.block.state.properties.BlockStateProperties.DOWN);
-    PANEL_CONNECT_PROPS.values().forEach(builder::add);
-    builder.add(CORNER_NE, CORNER_SE, CORNER_SW, CORNER_NW);
-  }
-
-  @Nullable
-  @Override
-  public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
-    BlockState state = super.getStateForPlacement(context);
-    if (state == null) {
-      return null;
-    }
-    for (var entry : CABLE_ADAPTER_PROPS.entrySet()) {
-      BlockState neighbor = context.getLevel().getBlockState(context.getClickedPos().relative(entry.getKey()));
-      state = state.setValue(entry.getValue(), cableConnectsFrom(neighbor, entry.getKey()));
-    }
-    for (var entry : PANEL_CONNECT_PROPS.entrySet()) {
-      BlockState neighbor = context.getLevel().getBlockState(context.getClickedPos().relative(entry.getKey()));
-      state = state.setValue(entry.getValue(), neighbor.getBlock() instanceof BlockSolarGenerator);
-    }
-
-    return updateInnerCorners(state, context.getLevel(), context.getClickedPos());
   }
 
   @SuppressWarnings("deprecation")
   @Override
   public BlockState updateShape(BlockState state, net.minecraft.core.Direction direction, BlockState neighborState,
       net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-    var cableProp = CABLE_ADAPTER_PROPS.get(direction);
-    if (cableProp != null) {
-      state = state.setValue(cableProp, cableConnectsFrom(neighborState, direction));
-    }
-    var panelProp = PANEL_CONNECT_PROPS.get(direction);
-    if (panelProp != null) {
-      state = state.setValue(panelProp, neighborState.getBlock() instanceof BlockSolarGenerator);
-      state = updateInnerCorners(state, level, pos);
-    }
-    if (cableProp != null || panelProp != null) {
+    if (SolarPanelFlags.isCableSide(direction) || SolarPanelFlags.isPanelSide(direction)) {
+      if (level.getBlockEntity(pos) instanceof BlockEntitySolarGenerator panel) {
+        com.faktocraft.common.block.ModelFlags flags = panel.panelFlags();
+        SolarPanelFlags.onShapeUpdate(panel, flags, level, pos, direction, neighborState);
+        if (flags.takeDirty() && !level.isClientSide()) {
+          state.updateNeighbourShapes(level, pos, Block.UPDATE_CLIENTS, Block.UPDATE_LIMIT);
+        }
+      }
       return state;
     }
     return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
-  }
-
-  private static boolean cableConnectsFrom(BlockState neighborState, net.minecraft.core.Direction direction) {
-    if (!(neighborState.getBlock() instanceof com.faktocraft.common.block.impl.cable.BlockCable)) {
-      return false;
-    }
-    var toPanel = com.faktocraft.common.block.VoxelBlock.FACING_TO_PROPERTY_MAP.get(direction.getOpposite());
-    return neighborState.hasProperty(toPanel) && neighborState.getValue(toPanel);
   }
 
   @Nullable

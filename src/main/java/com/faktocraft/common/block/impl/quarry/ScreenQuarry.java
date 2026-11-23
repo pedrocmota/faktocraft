@@ -8,6 +8,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import com.faktocraft.common.screen.TensionRemovalGuard;
 
 public class ScreenQuarry extends AbstractContainerScreen<MenuQuarry>
     implements com.faktocraft.common.interfaces.screen.IGuiWrapper {
@@ -33,6 +36,17 @@ public class ScreenQuarry extends AbstractContainerScreen<MenuQuarry>
   @Override
   public com.faktocraft.common.entity.block.FaktocraftBlockEntity getBlockEntity() {
     return menu.getQuarry();
+  }
+
+  @Override
+  protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    com.faktocraft.common.entity.block.FaktocraftBlockEntity blockEntity = getBlockEntity();
+    if (TensionRemovalGuard.confirm(this, slot, mouseButton, type,
+        blockEntity == null ? null : blockEntity.getEnergyStorage(),
+        () -> super.slotClicked(slot, slotId, mouseButton, type))) {
+      return;
+    }
+    super.slotClicked(slot, slotId, mouseButton, type);
   }
 
   @Override

@@ -200,14 +200,18 @@ public class BlockEntityMetalFormer extends FaktocraftBlockEntity
   }
 
   protected Optional<? extends IRecipeSingleIngredient> getRecipe(ItemStack input) {
-    if (!(level instanceof ServerLevel serverLevel)) {
+    if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
+    return findRecipe(input);
+  }
+
+  private Optional<? extends IRecipeSingleIngredient> findRecipe(ItemStack input) {
     MachineRecipeInput recipeInput = MachineRecipeInput.of(input);
     return switch (mode) {
-      case CUTTING -> serverLevel.getRecipeManager().getRecipeFor(ModRecipeType.CUTTING, recipeInput, level);
-      case ROLLING -> serverLevel.getRecipeManager().getRecipeFor(ModRecipeType.ROLLING, recipeInput, level);
-      case EXTRUDING -> serverLevel.getRecipeManager().getRecipeFor(ModRecipeType.EXTRUDING, recipeInput, level);
+      case CUTTING -> level.getRecipeManager().getRecipeFor(ModRecipeType.CUTTING, recipeInput, level);
+      case ROLLING -> level.getRecipeManager().getRecipeFor(ModRecipeType.ROLLING, recipeInput, level);
+      case EXTRUDING -> level.getRecipeManager().getRecipeFor(ModRecipeType.EXTRUDING, recipeInput, level);
     };
   }
 
@@ -215,10 +219,7 @@ public class BlockEntityMetalFormer extends FaktocraftBlockEntity
     if (stack.isEmpty()) {
       return false;
     }
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   public MetalFormerMode getMode() {

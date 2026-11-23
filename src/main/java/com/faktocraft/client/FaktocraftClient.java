@@ -53,6 +53,8 @@ public class FaktocraftClient {
   public static void onModifyBakingResult(net.minecraftforge.client.event.ModelEvent.ModifyBakingResult event) {
     com.faktocraft.client.model.CoverQuads.clear();
     java.util.Map<ResourceLocation, net.minecraft.client.resources.model.BakedModel> models = event.getModels();
+    com.faktocraft.client.model.FlagModels flagModels = new com.faktocraft.client.model.FlagModels(
+        event.getModelBakery(), models);
     java.util.List<ResourceLocation> keys = new java.util.ArrayList<>(models.keySet());
     for (ResourceLocation key : keys) {
       if (!(key instanceof net.minecraft.client.resources.model.ModelResourceLocation location)
@@ -64,6 +66,10 @@ public class FaktocraftClient {
       if (block == null) {
         continue;
       }
+      java.util.List<com.faktocraft.client.model.FlagsBakedModel.Part> parts = flagModels.partsFor(block);
+      if (parts != null) {
+        models.put(key, new com.faktocraft.client.model.FlagsBakedModel(models.get(key), parts));
+      }
       boolean drilled = block == ModBlocks.DRILLED_BLOCK;
       if (drilled || com.faktocraft.common.cover.CoverSupport.isCoverable(block)) {
         models.put(key, new com.faktocraft.client.model.CoverBakedModel(models.get(key), drilled));
@@ -73,6 +79,9 @@ public class FaktocraftClient {
 
   @SubscribeEvent
   public static void onRegisterAdditionalModels(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event) {
+    for (ResourceLocation location : com.faktocraft.client.model.FlagModels.additionalModels()) {
+      event.register(location);
+    }
     event.register(com.faktocraft.client.render.PipeSupportRenderer.CLAMP_MODEL);
     event.register(com.faktocraft.client.render.ExtractorSocketRenderer.SOCKET_MODEL);
     event.register(com.faktocraft.client.render.ExtractorRingRenderer.BAR_MODEL);

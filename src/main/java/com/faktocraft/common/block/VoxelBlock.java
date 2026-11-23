@@ -32,15 +32,6 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
 
   public static final Map<Direction, BooleanProperty> FACING_TO_PROPERTY_MAP = createFacingMap();
 
-  public static final BooleanProperty EXT_NORTH = BooleanProperty.create("ext_north");
-  public static final BooleanProperty EXT_EAST = BooleanProperty.create("ext_east");
-  public static final BooleanProperty EXT_SOUTH = BooleanProperty.create("ext_south");
-  public static final BooleanProperty EXT_WEST = BooleanProperty.create("ext_west");
-  public static final BooleanProperty EXT_UP = BooleanProperty.create("ext_up");
-  public static final BooleanProperty EXT_DOWN = BooleanProperty.create("ext_down");
-
-  public static final Map<Direction, BooleanProperty> EXT_TO_PROPERTY_MAP = createExtMap();
-
   private final VoxelShape[] shapes;
 
   private final float apothem;
@@ -53,11 +44,6 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
         .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false)
         .setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)
         .setValue(WATERLOGGED, false);
-    if (connectionExtensions()) {
-      for (BooleanProperty ext : EXT_TO_PROPERTY_MAP.values()) {
-        state = state.setValue(ext, false);
-      }
-    }
     if (coverable()) {
       state = state.setValue(CoverSupport.COVERED, false);
     }
@@ -119,7 +105,26 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
     return false;
   }
 
-  private boolean extendsInto(LevelAccessor level, BlockPos pos, Direction direction, boolean connected) {
+  public boolean hasConnectionExtensions() {
+    return connectionExtensions();
+  }
+
+  private void updateExtension(LevelAccessor level, BlockPos pos, Direction direction, boolean connected) {
+    if (level.getBlockEntity(pos) instanceof IConnectionExtensionHost host) {
+      host.extensions().update((net.minecraft.world.level.block.entity.BlockEntity) host, direction,
+          extendsInto(level, pos, direction, connected));
+    }
+  }
+
+  protected BlockState finishShapeUpdate(LevelAccessor level, BlockPos pos, BlockState before, BlockState after) {
+    if (connectionExtensions() && level.getBlockEntity(pos) instanceof IConnectionExtensionHost host
+        && host.extensions().takeDirty() && after == before && !level.isClientSide()) {
+      after.updateNeighbourShapes(level, pos, Block.UPDATE_CLIENTS, Block.UPDATE_LIMIT);
+    }
+    return after;
+  }
+
+  public boolean extendsInto(LevelAccessor level, BlockPos pos, Direction direction, boolean connected) {
     if (!connected) {
       return false;
     }
@@ -139,17 +144,6 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
     map.put(Direction.WEST, WEST);
     map.put(Direction.UP, UP);
     map.put(Direction.DOWN, DOWN);
-    return map;
-  }
-
-  private static Map<Direction, BooleanProperty> createExtMap() {
-    Map<Direction, BooleanProperty> map = new EnumMap<>(Direction.class);
-    map.put(Direction.NORTH, EXT_NORTH);
-    map.put(Direction.EAST, EXT_EAST);
-    map.put(Direction.SOUTH, EXT_SOUTH);
-    map.put(Direction.WEST, EXT_WEST);
-    map.put(Direction.UP, EXT_UP);
-    map.put(Direction.DOWN, EXT_DOWN);
     return map;
   }
 
@@ -199,9 +193,6 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
     super.createBlockStateDefinition(builder);
     builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN, WATERLOGGED);
-    if (connectionExtensions()) {
-      builder.add(EXT_NORTH, EXT_EAST, EXT_SOUTH, EXT_WEST, EXT_UP, EXT_DOWN);
-    }
     if (coverable()) {
       builder.add(CoverSupport.COVERED);
     }
@@ -216,7 +207,7 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
       boolean connected = canConnect(level, pos, direction);
       state = state.setValue(FACING_TO_PROPERTY_MAP.get(direction), connected);
       if (connectionExtensions()) {
-        state = state.setValue(EXT_TO_PROPERTY_MAP.get(direction), extendsInto(level, pos, direction, connected));
+        updateExtension(level, pos, direction, connected);
       }
     }
     return state;
@@ -232,6 +223,12 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
   @Override
   public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level,
       BlockPos pos, BlockPos neighborPos) {
+    return finishShapeUpdate(level, pos, state,
+        computeShapeUpdate(state, direction, neighborState, level, pos, neighborPos));
+  }
+
+  protected BlockState computeShapeUpdate(BlockState state, Direction direction, BlockState neighborState,
+      LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
     if (waterloggable()) {
       boolean above = hasWaterAbove(level, pos);
       if (!state.getValue(WATERLOGGED)) {
@@ -249,7 +246,7 @@ public class VoxelBlock extends FaktocraftBlock implements net.minecraft.world.l
     boolean connected = canConnect(level, pos, direction);
     state = state.setValue(FACING_TO_PROPERTY_MAP.get(direction), connected);
     if (connectionExtensions()) {
-      state = state.setValue(EXT_TO_PROPERTY_MAP.get(direction), extendsInto(level, pos, direction, connected));
+      updateExtension(level, pos, direction, connected);
     }
     return state;
   }

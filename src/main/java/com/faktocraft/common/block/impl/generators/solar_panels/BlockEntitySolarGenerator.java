@@ -20,8 +20,45 @@ public class BlockEntitySolarGenerator extends FaktocraftBlockEntity
   }
 
   private final SolarGeneratorTier tier;
+  private final com.faktocraft.common.block.ModelFlags panelFlags = SolarPanelFlags.create();
   private int lastAmount = 0;
   public int amount = 0;
+
+  public com.faktocraft.common.block.ModelFlags panelFlags() {
+    return panelFlags;
+  }
+
+  private void resolvePanelFlags() {
+    panelFlags.resolve(this, (blockEntity, level, pos, state, pending) -> SolarPanelFlags.resolve(blockEntity,
+        panelFlags, level, pos, pending));
+  }
+
+  @Override
+  public net.minecraftforge.client.model.data.ModelData getModelData() {
+    return panelFlags.modelData(net.minecraftforge.client.model.data.ModelData.EMPTY);
+  }
+
+  @Override
+  public void onDataPacket(net.minecraft.network.Connection connection,
+      net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket packet) {
+    int previous = panelFlags.mask();
+    super.onDataPacket(connection, packet);
+    if (panelFlags.mask() != previous) {
+      com.faktocraft.common.cover.CoverSupport.refreshClientModel(this);
+    }
+  }
+
+  @Override
+  public void onLoad() {
+    super.onLoad();
+    resolvePanelFlags();
+  }
+
+  @Override
+  public CompoundTag getUpdateTag() {
+    resolvePanelFlags();
+    return super.getUpdateTag();
+  }
 
   public BlockEntitySolarGenerator(BlockPos pos, BlockState state) {
     super(M1Registry.SOLAR_GENERATOR_BE, pos, state);
@@ -39,6 +76,7 @@ public class BlockEntitySolarGenerator extends FaktocraftBlockEntity
 
   @Override
   public void tickWork(BlockState state) {
+    resolvePanelFlags();
     boolean active = false;
     amount = 0;
     getEnergyStorage().updateGenerated(0);
@@ -80,6 +118,7 @@ public class BlockEntitySolarGenerator extends FaktocraftBlockEntity
     tag.putBoolean("active", activeState);
     tag.putInt("amount", amount);
     tag.putInt("lastAmount", lastAmount);
+    panelFlags.save(tag);
     super.saveAdditional(tag);
   }
 
@@ -89,6 +128,7 @@ public class BlockEntitySolarGenerator extends FaktocraftBlockEntity
     activeState = tag.getBoolean("active");
     amount = tag.contains("amount") ? tag.getInt("amount") : 0;
     lastAmount = tag.contains("lastAmount") ? tag.getInt("lastAmount") : 0;
+    panelFlags.load(tag);
   }
 
   @Override

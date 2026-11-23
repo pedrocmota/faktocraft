@@ -80,10 +80,14 @@ public class BlockEntityOreWashingPlant extends FaktocraftBlockEntity
   }
 
   protected Optional<OreWashingRecipe> getRawRecipe(ItemStack input) {
-    if (!(level instanceof ServerLevel serverLevel)) {
+    if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
-    return serverLevel.getRecipeManager().getRecipeFor(ModRecipeType.ORE_WASHING, MachineRecipeInput.of(input),
+    return findRecipe(input);
+  }
+
+  private Optional<OreWashingRecipe> findRecipe(ItemStack input) {
+    return level.getRecipeManager().getRecipeFor(ModRecipeType.ORE_WASHING, MachineRecipeInput.of(input),
         level);
   }
 
@@ -106,10 +110,7 @@ public class BlockEntityOreWashingPlant extends FaktocraftBlockEntity
     if (stack.isEmpty()) {
       return false;
     }
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRawRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   private static boolean outputFits(ItemStack outputStack, ItemStack resultStack) {
