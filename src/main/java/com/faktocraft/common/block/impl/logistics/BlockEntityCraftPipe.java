@@ -396,6 +396,9 @@ public class BlockEntityCraftPipe extends BlockEntityDockingPipe {
   private int drainCooldown = 10;
 
   public void tickServer() {
+    if (level != null) {
+      extensions().resolve(this);
+    }
     if (level == null || --drainCooldown > 0) {
       return;
     }

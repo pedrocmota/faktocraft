@@ -77,6 +77,10 @@ public class BlockEntityPolymerizer extends FaktocraftBlockEntity
     if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
+    return findRecipe(input);
+  }
+
+  private Optional<PolymerizingRecipe> findRecipe(ItemStack input) {
     return RecipeUtil.findRecipe(level, ModRecipeType.POLYMERIZING, MachineRecipeInput.of(input));
   }
 
@@ -95,10 +99,7 @@ public class BlockEntityPolymerizer extends FaktocraftBlockEntity
     if (stack.isEmpty()) {
       return false;
     }
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRawRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   private boolean canWork(ItemStack inputStack, PolymerizingRecipe currentRecipe) {

@@ -46,7 +46,7 @@ public class JetpackModel extends HumanoidModel<HumanoidRenderState> {
       body.addOrReplaceChild("tank_" + i, CubeListBuilder.create()
           .texOffs(40, 0).addBox(x0, 1.5F, 3.2F, 3, 9, 3)
           .texOffs(52, 0).addBox(x0 + 0.5F, 0.5F, 3.7F, 2, 1, 2)
-          .texOffs(40, 14).addBox(x0 + 0.5F, 10.5F, 3.5F, 2, 2, 2), PartPose.ZERO);
+          .texOffs(56, 20).addBox(x0 + 0.5F, 10.5F, 3.5F, 2, 2, 2), PartPose.ZERO);
     }
     body.addOrReplaceChild("tank_bar", CubeListBuilder.create()
         .texOffs(52, 16).addBox(-1.0F, 3.5F, 3.4F, 2, 3, 1), PartPose.ZERO);

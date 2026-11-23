@@ -204,6 +204,10 @@ public class BlockEntityMetalFormer extends FaktocraftBlockEntity
     if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
+    return findRecipe(input);
+  }
+
+  private Optional<? extends IRecipeSingleIngredient> findRecipe(ItemStack input) {
     MachineRecipeInput recipeInput = MachineRecipeInput.of(input);
     return switch (mode) {
       case CUTTING -> RecipeUtil.findRecipe(level, ModRecipeType.CUTTING, recipeInput);
@@ -216,10 +220,7 @@ public class BlockEntityMetalFormer extends FaktocraftBlockEntity
     if (stack.isEmpty()) {
       return false;
     }
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   public MetalFormerMode getMode() {

@@ -105,59 +105,6 @@
     "model": "faktocraft:block/pipe/craft_pipe_side",
     "x": 90
    }
-  },
-  {
-   "when": {
-    "ext_north": "true"
-   },
-   "apply": {
-    "model": "faktocraft:block/pipe/craft_pipe_ext"
-   }
-  },
-  {
-   "when": {
-    "ext_east": "true"
-   },
-   "apply": {
-    "model": "faktocraft:block/pipe/craft_pipe_ext",
-    "y": 90
-   }
-  },
-  {
-   "when": {
-    "ext_south": "true"
-   },
-   "apply": {
-    "model": "faktocraft:block/pipe/craft_pipe_ext",
-    "y": 180
-   }
-  },
-  {
-   "when": {
-    "ext_west": "true"
-   },
-   "apply": {
-    "model": "faktocraft:block/pipe/craft_pipe_ext",
-    "y": 270
-   }
-  },
-  {
-   "when": {
-    "ext_up": "true"
-   },
-   "apply": {
-    "model": "faktocraft:block/pipe/craft_pipe_ext",
-    "x": -90
-   }
-  },
-  {
-   "when": {
-    "ext_down": "true"
-   },
-   "apply": {
-    "model": "faktocraft:block/pipe/craft_pipe_ext",
-    "x": 90
-   }
   }
  ]
 }

@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Inventory;
 import java.util.Optional;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
 
 public class BaseScreen<T extends FaktocraftMenu> extends AbstractContainerScreen<T> implements IGuiWrapper {
   private final T container;
@@ -47,6 +49,17 @@ public class BaseScreen<T extends FaktocraftMenu> extends AbstractContainerScree
   @Override
   public Identifier getGuiLocation() {
     return null;
+  }
+
+  @Override
+  protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
+    FaktocraftBlockEntity blockEntity = getBlockEntity();
+    if (TensionRemovalGuard.confirm(this, slot, mouseButton, type,
+        blockEntity == null ? null : blockEntity.getEnergyStorage(),
+        () -> super.slotClicked(slot, slotId, mouseButton, type))) {
+      return;
+    }
+    super.slotClicked(slot, slotId, mouseButton, type);
   }
 
   @Override

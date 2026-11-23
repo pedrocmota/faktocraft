@@ -65,6 +65,10 @@ public class BlockEntityThermalCentrifuge extends FaktocraftBlockEntity
     if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
+    return findRecipe(input);
+  }
+
+  private Optional<ThermalCentrifugingRecipe> findRecipe(ItemStack input) {
     return RecipeUtil.findRecipe(level, ModRecipeType.THERMAL_CENTRIFUGING, MachineRecipeInput.of(input));
   }
 
@@ -83,10 +87,7 @@ public class BlockEntityThermalCentrifuge extends FaktocraftBlockEntity
     if (stack.isEmpty()) {
       return false;
     }
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   private static boolean outputFits(ItemStack outputStack, ItemStack resultStack) {

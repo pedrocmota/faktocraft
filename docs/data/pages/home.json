@@ -12,8 +12,8 @@
     {
       "type": "callout",
       "style": "warning",
-      "en": "The **Minecraft 26.3 / NeoForge** version is an **alpha**: it is a work-in-progress port of the 1.20.1 mod. Expect missing features, visual glitches and bugs, and back up your worlds before opening them here. The **1.20.1 Forge** version is the stable one. Found a problem? Report it on [GitHub](https://github.com/pedrocmota/faktocraft-forge/issues).",
-      "pt": "A versão para **Minecraft 26.3 / NeoForge** é um **alpha**: é um port em andamento do mod da 1.20.1. Espere funcionalidades faltando, falhas visuais e bugs, e faça backup dos seus mundos antes de abri-los aqui. A versão **1.20.1 Forge** é a estável. Achou um problema? Reporte no [GitHub](https://github.com/pedrocmota/faktocraft-forge/issues)."
+      "en": "The **Minecraft 26.3 / NeoForge** version is an **alpha**: it is a work-in-progress port of the 1.20.1 mod. Expect missing features, visual glitches and bugs, and back up your worlds before opening them here. The **1.20.1 Forge** version is the stable one. Found a problem? Report it on [GitHub](https://github.com/pedrocmota/faktocraft/issues).",
+      "pt": "A versão para **Minecraft 26.3 / NeoForge** é um **alpha**: é um port em andamento do mod da 1.20.1. Espere funcionalidades faltando, falhas visuais e bugs, e faça backup dos seus mundos antes de abri-los aqui. A versão **1.20.1 Forge** é a estável. Achou um problema? Reporte no [GitHub](https://github.com/pedrocmota/faktocraft/issues)."
     },
     {
       "type": "callout",

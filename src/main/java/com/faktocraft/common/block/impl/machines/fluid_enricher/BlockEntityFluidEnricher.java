@@ -100,6 +100,10 @@ public class BlockEntityFluidEnricher extends FaktocraftBlockEntity
     if (!(level instanceof ServerLevel)) {
       return Optional.empty();
     }
+    return findRecipe(input);
+  }
+
+  private Optional<FluidEnrichingRecipe> findRecipe(ItemStack input) {
     return RecipeUtil.findRecipe(level, ModRecipeType.FLUID_ENRICHING, MachineRecipeInput.of(input));
   }
 
@@ -174,10 +178,7 @@ public class BlockEntityFluidEnricher extends FaktocraftBlockEntity
     if (stack.isEmpty()) {
       return false;
     }
-    if (level != null && level.isClientSide()) {
-      return true;
-    }
-    return getRawRecipe(stack).isPresent();
+    return level != null && findRecipe(stack).isPresent();
   }
 
   private boolean outputFits(FluidEnrichingRecipe currentRecipe) {

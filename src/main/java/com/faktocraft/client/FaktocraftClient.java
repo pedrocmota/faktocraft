@@ -4,6 +4,8 @@ import com.faktocraft.Faktocraft;
 import com.faktocraft.client.model.ChargeRatioProperty;
 import com.faktocraft.client.model.CoverBakedModel;
 import com.faktocraft.client.model.CoverQuads;
+import com.faktocraft.client.model.FlagModels;
+import com.faktocraft.client.model.FlagsBakedModel;
 import com.faktocraft.client.model.FluidTintSource;
 import com.faktocraft.client.model.HazmatModel;
 import com.faktocraft.client.model.ItemModelProperties;
@@ -184,9 +186,15 @@ public class FaktocraftClient {
   public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
     CoverQuads.clear();
     Map<BlockState, BlockStateModel> models = event.getBakingResult().blockStateModels();
+    Map<Block, List<FlagsBakedModel.Part>> flagParts = FlagModels.parts(
+        event.getBakingResult().standaloneModels());
     List<BlockState> states = new ArrayList<>(models.keySet());
     for (BlockState state : states) {
       Block block = state.getBlock();
+      List<FlagsBakedModel.Part> parts = flagParts.get(block);
+      if (parts != null) {
+        models.put(state, new FlagsBakedModel(models.get(state), parts));
+      }
       boolean drilled = block == ModBlocks.DRILLED_BLOCK;
       if (drilled || CoverSupport.isCoverable(block)) {
         models.put(state, new CoverBakedModel(models.get(state), drilled));
@@ -196,6 +204,7 @@ public class FaktocraftClient {
 
   @SubscribeEvent
   public static void onRegisterStandaloneModels(ModelEvent.RegisterStandalone event) {
+    FlagModels.registerStandalone(event);
     event.register(PipeSupportRenderer.CLAMP_KEY,
         SimpleUnbakedStandaloneModel.simpleModelWrapper(PipeSupportRenderer.CLAMP_MODEL));
     event.register(ExtractorSocketRenderer.SOCKET_KEY,

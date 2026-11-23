@@ -19,11 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
-    implements com.faktocraft.common.cover.ICoverHost {
+    implements com.faktocraft.common.cover.ICoverHost, com.faktocraft.common.block.IConnectionExtensionHost {
 
   @org.jetbrains.annotations.Nullable
   private BlockState cover;
   private int coverHoles;
+  private final com.faktocraft.common.block.ConnectionExtensions extensions =
+      new com.faktocraft.common.block.ConnectionExtensions();
+
+  @Override
+  public com.faktocraft.common.block.ConnectionExtensions extensions() {
+    return extensions;
+  }
 
   @org.jetbrains.annotations.Nullable
   @Override
@@ -45,7 +52,7 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
 
   @Override
   public net.neoforged.neoforge.model.data.ModelData getModelData() {
-    return com.faktocraft.common.cover.CoverSupport.modelData(cover, coverHoles);
+    return extensions.modelData(com.faktocraft.common.cover.CoverSupport.modelData(cover, coverHoles));
   }
 
   @Override
@@ -53,16 +60,25 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
       net.minecraft.world.level.storage.ValueInput input) {
     BlockState previousCover = cover;
     int previousHoles = coverHoles;
+    int previousExtensions = extensions.mask();
     super.onDataPacket(connection, input);
-    if (previousCover != cover || previousHoles != coverHoles) {
+    if (previousCover != cover || previousHoles != coverHoles || extensions.mask() != previousExtensions) {
       com.faktocraft.common.cover.CoverSupport.refreshClientModel(this);
     }
+  }
+
+  @Override
+  public void setLevel(net.minecraft.world.level.Level level) {
+    super.setLevel(level);
+    extensions.onLevelSet(this);
   }
 
   @Override
   public void onLoad() {
     super.onLoad();
     com.faktocraft.common.cover.CoverSupport.onClientLoad(this, this);
+    extensions.resolve(this);
+    extensions.onClientLoad(this);
     if (level != null && !level.isClientSide()) {
       LogisticsCores.markDirtyNear(level, worldPosition);
     }
@@ -167,8 +183,14 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
       return;
     }
     BlockState state = block.withConnections(getBlockState(), level, worldPosition);
-    level.setBlock(worldPosition, state, 3);
+    boolean changed = level.setBlock(worldPosition, state, 3);
     level.sendBlockUpdated(worldPosition, state, state, 3);
+    boolean dirty = extensions.takeDirty();
+    if (!changed && dirty && !level.isClientSide()) {
+      level.updateNeighborsAt(worldPosition, state.getBlock());
+      state.updateNeighbourShapes(level, worldPosition, net.minecraft.world.level.block.Block.UPDATE_CLIENTS,
+          net.minecraft.world.level.block.Block.UPDATE_LIMIT);
+    }
   }
 
   protected void sync() {
@@ -185,6 +207,7 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
       tag.putInt("invDir", selectedInventory.get3DDataValue());
     }
     com.faktocraft.common.cover.CoverSupport.save(tag, cover, coverHoles);
+    extensions.save(tag);
   }
 
   @Override
@@ -194,6 +217,7 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
     selectedInventory = tag.contains("invDir") ? Direction.from3DDataValue(tag.getIntOr("invDir", 0)) : null;
     cover = com.faktocraft.common.cover.CoverSupport.load(tag);
     coverHoles = com.faktocraft.common.cover.CoverSupport.loadHoles(tag);
+    extensions.load(tag);
   }
 
   public CompoundTag copyConfig() {
@@ -201,6 +225,7 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
     tag.remove("invDir");
     tag.remove("cover");
     tag.remove("coverHoles");
+    tag.remove("extensions");
     return tag;
   }
 
@@ -221,6 +246,7 @@ public abstract class BlockEntityDockingPipe extends LegacyNbtBlockEntity
   @Override
   public CompoundTag getUpdateTag() {
     CompoundTag tag = new CompoundTag();
+    extensions.resolveForSync(this);
     saveAdditional(tag);
     return tag;
   }

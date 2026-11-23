@@ -1,104 +1,106 @@
-# Faktocraft
+<p align="center">
+  <img src="docs/assets/logo.png" alt="Faktocraft" width="620">
+</p>
 
-<img src="docs/banners/main.webp" alt="Faktocraft" width="700">
+<p align="center">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/faktocraft">Download</a> &nbsp;·&nbsp;
+  <a href="https://pedrocmota.github.io/faktocraft">Wiki</a> &nbsp;·&nbsp;
+  <a href="https://github.com/pedrocmota/faktocraft/issues">Report a bug</a>
+</p>
 
-Faktocraft is a modern successor of several classic tech mods - **IndustrialCraft 2**, **BuildCraft** and **Logistics Pipes** - brought together into a single mod: electrical machines, tiered power grids, item and fluid pipes, automated mining and a request-based logistics system.
+<img src="docs/banners/main.webp" alt="A Faktocraft machine room with pipes, tanks and cables" width="100%">
 
-## Features
+Faktocraft is a modern successor of several classic tech mods - IndustrialCraft 2, BuildCraft and Logistics Pipes - rebuilt as a single, coherent mod: electrical machines, tiered power grids, item and fluid logistics, and automated mining.
 
-### Power
-- Five voltage tiers (Low to Ultra) with their own cables, transformers, circuit breakers and battery boxes. Feeding a machine the wrong tier makes it explode; bare cables shock whoever touches them.
-- Generators for every stage: fuel burners, geothermal, combustion, five solar panels and a wind generator driven by a live wind simulation.
-- A 3x3x3 **Nuclear Reactor** with a real heat model: rods and reflectors heat it, water and coolant kits cool it, and it melts down if you let it.
-- Charge pads, capacitors and machine upgrades (overclocker, efficiency, tension).
+This mod aims to be a spiritual successor that is extremely similar to the original; expect the same experience as in previous mods, but with a few specific changes.
 
-### Machines
-- Ore processing chain: crusher, ore washing plant and thermal centrifuge for extra output.
-- Manufacturing: compressor, metal former, extruder, circuit assembler, sawmill, three alloy smelters (coal, combustion, electric), canning machine and more.
-- Endgame: recycler, matter fabricator, scanner and replicator.
+## Power
 
-### Oil and chemistry
-- Oil pockets, giant underground reservoirs and surface lakes in dry biomes.
-- Fluid pump, tanks, fluid pipes with valves, and the Ender Tank that shares its contents across any distance or dimension.
-- Fuel Distillery, Polymerizer (plastic and rubber), Fluid Enricher (sulfuric acid, coolant) and Fermenter (biofuel).
+<img src="docs/assets/showcase/power.png" alt="Generators, a wind generator, solar panels, the nuclear reactor, three transformers, the four battery boxes and a charge pad" width="100%">
 
-### Logistics
-- Transparent item pipes: you can watch items travel.
-- Chassis pipes with modules (sink, provider, extractor, supplier, collector, ejector, disposal) and a RimWorld-style item filter.
-- Logistics Core and Request Table: ask for an item and the network gathers it or crafts it through craft pipes, recipe pipes and the assembly table, splitting work across machines.
+Five voltage levels, ranging from "Low" to "Ultra," each with its own cables, transformers, circuit breakers, and battery boxes.
 
-### World and mining
-- Rubber trees, seven new ores and uranium.
-- Geological Prospector and Geological Scanner with shared scan channels.
-- BuildCraft-style Quarry with landmarks, and a Forester that plants, fertilizes and harvests trees.
-- Hole Drill: bore through walls and hide cables and pipes inside the blocks.
+This mod features power generation from solid fuel, wind, solar, fossil fuels, geothermal, and nuclear sources.
 
-### Radiation
-- Uranium items, the reactor, meltdowns and the Nuke irradiate their surroundings. Lead and reinforced stone shield it.
-- Geiger Counter and a four-piece Hazmat suit.
+<img src="docs/banners/wind%20generator.webp" alt="A wind generator spinning above the trees" width="100%">
 
-### Gear and utility
-- Jetpacks, nano and quantum armor, electric tools, night vision goggles.
-- Status Monitor wall panel that shows live information about any block, Teleport Anchors (including a dimensional one), Chunk Loader, Luminator, reinforced stone and glass.
+## Machines
 
-## Requirements
+<img src="docs/assets/showcase/machines.png" alt="Crusher, ore washing plant, thermal centrifuge, electric furnace, compressor, extractor, metal former, extruder, circuit assembler, sawmill, alloy smelter, canning machine, matter fabricator and replicator" width="100%">
 
-- **Minecraft 26.3 with NeoForge** (26.3.0.76 or newer) - the `26.3` branch. The 1.20.1 Forge version lives on the `main` branch and keeps receiving fixes only.
-- Java 25 (bundled with the launcher).
+Ores go through the crusher first, which doubles the metal you get out of them. Washing and centrifuging the crushed ore gets a bit more out of it, plus some by-products. After that comes the usual set of machines: compressor, extruder, metal former, sawmill, alloy smelter, circuit assembler and canning machine. Late in the game, the recycler turns leftovers into scrap, the matter fabricator turns scrap into matter, and the replicator uses that matter to copy any item you scanned before.
+
+## Oil and fluids
+
+<img src="docs/banners/destilery.webp" alt="A distillery tower fed by tanks and pipes" width="100%">
+
+Oil spawns in three ways: small pockets underground, large reservoirs deeper down, and surface lakes in deserts and other dry biomes. You pump it, move it through fluid pipes and run it through the distillery to get fuel. The polymerizer turns it into plastic and rubber, the fluid enricher makes sulfuric acid and coolant, and the fermenter produces biofuel from biomass. Tanks hold it, valves control the flow, and the ender tank links its contents between any two places, including other dimensions.
+
+<table>
+  <tr>
+    <td><img src="docs/banners/oil.webp" alt="An oil lake in the desert"></td>
+    <td><img src="docs/banners/oil_pocket.webp" alt="An oil pocket deep underground"></td>
+  </tr>
+</table>
+
+<img src="docs/assets/showcase/fluids.png" alt="Fluid pipe, pump, tank, ender tank, distillery, polymerizer and fluid enricher" width="100%">
+
+## Logistics
+
+<img src="docs/banners/request.webp" alt="The Request Table listing what the network can deliver or craft" width="100%">
+
+Item pipes are see-through, so you can watch the items go by. Chassis pipes hold modules that decide what gets pulled from an inventory, where it goes, how it is sorted and what gets thrown away. The item filter works like the one in RimWorld. With a logistics core and a request table on the network, you can ask for an item and the system either fetches it from storage or crafts it, using craft pipes, recipe pipes and the assembly table, and spreading the work over whatever machines you have.
+
+<img src="docs/assets/showcase/logistics.png" alt="Stone and golden item pipes, a chassis pipe, a craft pipe, the logistics core, the request table and the assembly table" width="100%">
+
+## Mining
+
+<table>
+  <tr>
+    <td width="65%"><img src="docs/banners/query.webp" alt="A quarry frame mining a square pit"></td>
+    <td width="35%"><img src="docs/banners/scanner.webp" alt="The Geological Scanner map"></td>
+  </tr>
+</table>
+
+Mark the area with landmarks, put the quarry next to one of them and it builds its own frame and digs the whole area down, one layer at a time. The forester uses the same kind of frame to plant, fertilize and harvest trees. Before you start, the prospector tells you what is under your feet, and the geological scanner maps entire regions and shares what it finds over scan channels. The mod adds seven ores, uranium among them, plus rubber trees. The hole drill carves channels through blocks so you can run cables and pipes inside walls.
+
+<img src="docs/assets/showcase/world.png" alt="Quarry, forester, geological scanner, rubber log and the new ores in stone and deepslate" width="100%">
+
+## Nuclear
+
+<img src="docs/banners/nuclear_reactor.webp" alt="The nuclear reactor" width="100%">
+
+The reactor is a 3×3×3 multiblock with its own heat simulation. Fuel rods and neutron reflectors produce heat, water and coolant cells remove it, and if the heat gets out of control the reactor melts down. Uranium, a running reactor, a meltdown and the nuke all give off radiation. Lead and reinforced stone block it, the Geiger counter tells you how much you are getting, and the hazmat suit lets you work in a contaminated area.
+
+<img src="docs/assets/showcase/nuclear.png" alt="Uranium ore, uranium centrifuge, nuclear reactor, nuke, lead block, reinforced stone and reinforced glass" width="100%">
+
+## Everything else
+
+There are jetpacks, nano and quantum armor, electric tools and night vision goggles. The status monitor is a wall panel that shows live information from any block. Teleport anchors move you between fixed points, and the dimensional one works across dimensions. The chunk loader keeps your base ticking while you are somewhere else. For building, there is the luminator, reinforced stone and reinforced glass.
 
 ## Compatibility
 
-Faktocraft has a single mixin (it redirects the GUI renderer target while the Status Monitor draws its off-screen panel) and no coremods or access transformers, so it rarely conflicts with other mods.
+- **JEI** shows every recipe, and you can send a recipe straight to a machine, the request table or a pipe.
+- **Jade** shows energy, voltage and machine status when you look at a block.
+- **Sodium** and **Distant Horizons** work without any extra setup.
+- Pipes, the quarry and the machines work with chests, tanks, buckets and hoppers from other mods, and with storage networks such as Applied Energistics 2 and Refined Storage. Ores and ingots follow the usual tags, so tin from Faktocraft and tin from another mod can be used in each other's recipes.
+- Recipes can be changed with datapacks, KubeJS or CraftTweaker.
 
-### Compatible
+Some limits: the energy system is its own and does not convert to FE, so machines from Mekanism, Thermal or Create need their own power. The jetpack and the night vision goggles use the normal armor slots, not Curios. The quarry and the forester ignore land claims for now. Servers with region threading, like Folia, are not supported.
 
-- **JEI** - recipe categories for every machine, recipe transfer (the `+` button) into machines, the request table and the craft/recipe pipes.
-- **Jade** - energy, cable, circuit breaker, valve, reactor and machine info in the overlay. When Jade is on both the server and the client, the Status Monitor shows Jade's own tooltip for the watched block.
-- **Sodium** and **Distant Horizons**.
-- **REI** - the plugin is kept in the source tree but is not built until REI ships a NeoForge 26.3 release.
-
-### Compatible without integration
-
-- Minimaps, inventory tweaks, UI mods and most performance mods.
-- **Any mod using NeoForge item and fluid capabilities** (the transfer API) - inventories, tanks, buckets and hoppers work with the pipes, the quarry and the machines. Storage networks such as Applied Energistics 2 and Refined Storage are reachable as ordinary inventories.
-- **Common tags** - ores, ingots, dusts and other materials use the `c:` tags, so shared ores and ingredients from other mods are recognized. The quarry mines any ordinary block from any mod and can be tuned with the `faktocraft:quarry_blacklist` and `faktocraft:quarry_mineable` block tags; radiation shielding uses the `faktocraft:radiation_shielding` tag.
-- **Datapacks, KubeJS, CraftTweaker** - every recipe type has a JSON serializer, so Faktocraft recipes can be added, changed or removed. Oil generation is plain worldgen JSON.
-- **FE mods** (Mekanism, Thermal, Powah, Create and others) - Faktocraft power is its own system and is not exposed as FE. There is no converter yet.
-- **Curios** - the jetpack and the night vision goggles must be worn in the armor slots.
-- **Land claim mods** (FTB Chunks, Flan and similar) - the quarry and the forester do not enforce claims yet, the hole drill does.
-
-### Incompatible
-
-- **Folia** and other region-threaded servers - the energy networks, the logistics engine and the block entities assume a single server thread per world.
-
-## Fabric?
-
-A Fabric port is unlikely - the mod is deeply tied to NeoForge internals (capabilities, registries, networking), which makes porting it very difficult.
+Faktocraft uses only the Forge and NeoForge APIs. There are no mixins to create incompatibilities with other mods.
 
 ## Wiki
 
-The official wiki is available at **[pedrocmota.github.io/faktocraft-forge](https://pedrocmota.github.io/faktocraft-forge)** (English and Portuguese). It covers every system and every important block, from the first rubber tree to the replicator, with recipes, numbers and step-by-step guides.
+The **[wiki](https://pedrocmota.github.io/faktocraft)** (English and Portuguese) has a page for every system and every important block, with recipes, numbers and step-by-step guides.
 
 ## Translations
 
-The mod is written in English and has been tested in English and Portuguese, the two languages spoken by me. It also includes the following translations:
-
-- Portuguese, Portugal (pt_pt)
-- Spanish (es_es)
-- Russian (ru_ru)
-- Ukrainian (uk_ua)
-- Slovak (sk_sk)
-- Turkish (tr_tr)
-- Japanese (ja_jp)
-- Czech (cs_cz)
-- Korean (ko_kr)
-- Chinese, Simplified (zh_cn)
-
-These translations were AI-generated and have not been reviewed by a speaker, so they may contain errors. Corrections are welcome!
+The mod is written in English and tested in English and Portuguese. The other languages (Portuguese from Portugal, Spanish, Russian, Ukrainian, Slovak, Turkish, Japanese, Czech, Korean and Simplified Chinese) were machine translated and have not been checked by native speakers. If something reads wrong, corrections are welcome.
 
 ## Bug reports
 
-Found a bug? Please report it on the [GitHub issue tracker](https://github.com/pedrocmota/faktocraft-forge/issues) of this repository.
+If you find a bug, open an issue on the [issue tracker](https://github.com/pedrocmota/faktocraft/issues).
 
 ## License
 

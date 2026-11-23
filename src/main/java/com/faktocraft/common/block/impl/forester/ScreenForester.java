@@ -17,6 +17,9 @@ import net.minecraft.world.entity.player.Inventory;
 import com.faktocraft.common.screen.ClickRouting;
 import java.util.Optional;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
+import com.faktocraft.common.screen.TensionRemovalGuard;
 
 public class ScreenForester extends AbstractContainerScreen<MenuForester>
     implements com.faktocraft.common.interfaces.screen.IGuiWrapper {
@@ -47,6 +50,17 @@ public class ScreenForester extends AbstractContainerScreen<MenuForester>
   @Override
   public com.faktocraft.common.entity.block.FaktocraftBlockEntity getBlockEntity() {
     return menu.getForester();
+  }
+
+  @Override
+  protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
+    com.faktocraft.common.entity.block.FaktocraftBlockEntity blockEntity = getBlockEntity();
+    if (TensionRemovalGuard.confirm(this, slot, mouseButton, type,
+        blockEntity == null ? null : blockEntity.getEnergyStorage(),
+        () -> super.slotClicked(slot, slotId, mouseButton, type))) {
+      return;
+    }
+    super.slotClicked(slot, slotId, mouseButton, type);
   }
 
   @Override

@@ -98,9 +98,9 @@ public class BlockChassis extends VoxelBlock implements EntityBlock, IHasMenu {
   }
 
   @Override
-  public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
-      Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
-    state = super.updateShape(state, level, ticks, pos, direction, neighborPos, neighborState, random);
+  protected BlockState computeShapeUpdate(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+      BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+    state = super.computeShapeUpdate(state, level, ticks, pos, direction, neighborPos, neighborState, random);
     return withConnections(state, level, pos);
   }
 
